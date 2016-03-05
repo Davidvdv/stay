@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia) => ({
+  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia, Auth) => ({
     templateUrl: 'components/navbar/navbar.html',
     restrict: 'E',
     replace: true,
@@ -13,6 +13,7 @@ angular.module('stayApp')
       return init();
 
       function init(){
+        scope.logout = Auth.logout;
         scope.toggleSideNav = buildToggler(appConfig.sideNavId);
         scope.navbarDesktopToggle = scope.navbarDesktopToggle === undefined;
 
