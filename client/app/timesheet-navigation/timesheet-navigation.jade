@@ -1,0 +1,5 @@
+md-content.timesheet-navigation-content.fade-in-content(ng-class='{"fade-in": !!timesheets }')
+
+  md-list
+    md-list-item(ng-click='gotoTimesheet(timesheet)' ng-repeat='timesheet in timesheets track by $index')
+      | {{getTimesheetLabel(timesheet)}}

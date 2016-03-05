@@ -1,0 +1,62 @@
+md-input-container
+  label Description
+  input(type='input' ng-model='task.description')
+
+md-input-container
+  label Activity
+  input(type='input' ng-model='task.activity')
+
+md-input-container
+  label Task
+  input(type='input' ng-model='task.task')
+
+
+md-input-container.task-day-input
+  label Mon
+  input(type='number' ng-model='task.mon')
+
+md-input-container.task-day-input
+  label Tue
+  input(type='number' ng-model='task.tue')
+
+md-input-container.task-day-input
+  label Wed
+  input(type='number' ng-model='task.wed')
+
+md-input-container.task-day-input
+  label Thu
+  input(type='number' ng-model='task.thu')
+
+md-input-container.task-day-input
+  label Fri
+  input(type='number' ng-model='task.sat')
+
+//md-input-container.task-day-input
+  label Mon
+  input(type='number' ng-model='task.mon')
+
+//md-input-container.task-day-input
+  label Mon
+  input(type='number' ng-model='task.mon')
+
+md-input-container.task-day-input
+  label Total
+  input(type='number' ng-model='task.total')
+
+
+md-menu(md-position-mode="target-right target")
+  md-button.md-icon-button(aria-label='Open timesheet menu', ng-click='$mdOpenMenu($event)',)
+    md-icon(md-menu-origin='', md-svg-icon='assets/icons/more.svg')
+
+  md-menu-content(width='3')
+    //md-menu-item(ng-if=' ! isKnownProject(projectName)')
+    md-menu-item()
+      md-button(ng-click='openProjectDialog($event)')
+        //md-icon(md-menu-align-target='', md-svg-icon='call:no-sim')
+        | Set project
+    md-menu-item
+      md-button(ng-click='deleteTask($event, task, $index)')
+        //md-icon(md-menu-align-target='', md-svg-icon='call:no-sim')
+        | Delete
+
+

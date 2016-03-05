@@ -1,0 +1,31 @@
+md-dialog.dialog.timesheet-dialog-project
+
+  md-content(layout-padding)
+
+
+    md-autocomplete(ng-disabled='isDisabled', md-no-cache='noCache', md-selected-item='selectedClientItem',
+    md-search-text-change='searchClientTextChange(searchClientsText)', md-search-text='searchClientsText',
+    md-selected-item-change='selectedClientItemChange(clientItem)', md-items='clientItem in searchClients(searchClientsText)',
+    md-item-text='clientItem.name', md-min-length='0', placeholder='Enter the client name')
+
+      md-item-template
+        span(md-highlight-text='searchClientsText', md-highlight-flags='^i') {{clientItem.name}}
+      md-not-found
+        | No clients matching "{{searchClientsText}}" were found.
+
+
+
+    md-autocomplete(ng-disabled='isDisabled', md-no-cache='noCache', md-selected-item='selectedProjectItem',
+    md-search-text-change='searchProjectTextChange(searchProjectsText)', md-search-text='searchProjectsText',
+    md-selected-item-change='selectedProjectItemChange(projectItem)', md-items='projectItem in searchProjects(selectedClientItem, searchProjectsText)',
+    md-item-text='projectItem.name', md-min-length='0', placeholder='Enter the project name')
+
+      md-item-template
+        span(md-highlight-text='searchProjectsText', md-highlight-flags='^i') {{projectItem.name}}
+      md-not-found
+        | No projects matching "{{searchProjectsText}}" were found.
+
+
+
+
+    md-button.md-raised.md-primary() Done

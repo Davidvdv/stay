@@ -1,0 +1,22 @@
+
+
+div(layout='column')
+
+  section(layout='row' flex)
+    navbar(navbar-desktop-toggle='main.isOpenDesktop')
+
+  section(layout='row' flex)
+
+    md-progress-circular.timesheet-loader(ng-show='! main.currentTimesheet', md-diameter='120' md-mode="indeterminate")
+
+    md-sidenav.md-sidenav-left(id="left-nav" md-component-id='left-nav',
+    md-is-locked-open="$mdMedia('lt-md') || ($mdMedia('gt-sm') && main.isOpenDesktop)")
+
+      md-content
+        timesheet-navigation(timesheets='main.timesheets')
+
+
+    md-content(flex)
+
+      timesheet(timesheet='main.currentTimesheet')
+
