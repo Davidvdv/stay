@@ -19,7 +19,7 @@ md-content.timesheet-content.fade-in-content(ng-class='{"fade-in": !!timesheet }
       h1.hide-collapsed-menu(ng-show='$first && isKnownProject(projectName)') {{getClientNameDisplay(clientName)}}
 
 
-      md-content.task(flex layout='row' ng-repeat='task in projectValue track by $index')
+      md-content.task(ng-class='{"first-task": $first}' flex layout='row' ng-repeat='task in projectValue track by $index')
 
         include ./timesheet-task.jade
 

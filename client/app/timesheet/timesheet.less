@@ -1,12 +1,5 @@
 
 
-.task-total-input {
-  width: 38px;
-}
-.task-day-input {
-  width: 34px;
-}
-
 .bold-input {
   input {
     font-weight: 700;
@@ -18,10 +11,63 @@
 }
 
 
+
+.task-menu-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+
+.task-menu-input,
+.task-total-input,
+.task-day-input {
+  width: 14.2%;
+  input {
+    text-align: left;
+  }
+}
+
 .activity-input,
 .task-input {
-  max-width: 160px;
+  width: 50%;
 }
+
+.description-input {
+  width: 100%;
+}
+
+@media (min-width: @screen-md-min) {
+  .description-input {
+    width: auto;
+  }
+  .task-total-input {
+    width: 38px;
+  }
+  .task-day-input {
+    width: 34px;
+    label {
+      width: 34px;
+      text-align: center;
+    }
+  }
+  .activity-input,
+  .task-input {
+    max-width: 160px;
+  }
+  .task-menu-input {
+    width: auto;
+  }
+
+  .task-menu-input,
+  .task-total-input,
+  .task-day-input {
+    input {
+      text-align: right;
+    }
+  }
+}
+
 
 
 
@@ -30,6 +76,10 @@ md-content.task {
   flex-wrap: wrap;
 
   padding: 0 0 0 8px;
+
+  &.first-task {
+    padding-top: 14px;
+  }
 
   @media(min-width: @screen-md-min){
     flex-wrap: nowrap;
@@ -40,16 +90,32 @@ md-content.task {
   }
 
   md-input-container {
-
-    padding-bottom: 0;
+    padding: 2px 0;
     .md-errors-spacer {
       display: none;
     }
+    input {
+      padding-left: 0;
+      padding-right: 0;
+
+    }
+  }
+
+  input:-moz-placeholder{font-weight: normal; color: @task-placeholder-color !important;}
+  input::-moz-placeholder{font-weight: normal; color: @task-placeholder-color !important;}
+  input:-ms-input-placeholder{font-weight: normal; color: @task-placeholder-color !important;}
+  input::-webkit-input-placeholder {font-weight: normal; color: @task-placeholder-color !important;}
+
+  md-input-container.md-input-focused label:not(.md-no-float), md-input-container.md-input-has-placeholder label:not(.md-no-float), md-input-container.md-input-has-value label:not(.md-no-float) {
+    transform: translate3d(0, 0, 0) scale(1);
+    color: @task-label-color;
+  }
+  md-input-container label:not(.md-no-float):not(.md-container-ignore), md-input-container .md-placeholder {
+    padding-left: 0;
   }
 
   md-menu.md-menu {
     margin-top: -14px;
-
     padding: 8px 0 10px;
   }
 }
@@ -100,3 +166,7 @@ md-content.project md-content {
   background-color: #fff;
 }
 
+md-content.timesheet-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
