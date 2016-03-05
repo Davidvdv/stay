@@ -15,6 +15,8 @@ angular.module('stayApp')
         return init();
 
         function init(){
+          scope.getProjectNameDisplay = getProjectNameDisplay
+          scope.getClientNameDisplay = getClientNameDisplay;
           scope.isKnownProject = isKnownProject;
           scope.openProjectDialog = openProjectDialog;
           scope.deleteTask = deleteTask;
@@ -38,6 +40,14 @@ angular.module('stayApp')
                 return Timesheet.moveTimesheetTask(taskIndex, timesheet, clientName, projectName, accepted.clientItem, accepted.projectItem);
               }
             });
+        }
+
+        function getClientNameDisplay(clientName){
+          return clientName === 'CLIENT_UNKNOWN' ? 'Unknown' : clientName;
+        }
+
+        function getProjectNameDisplay(projectName){
+          return projectName === 'PROJECT_UNKNOWN' ? 'Unknown' : projectName;
         }
 
         function isKnownProject(projectName){
