@@ -12,7 +12,7 @@ md-content.timesheet-content.fade-in-content(ng-class='{"fade-in": !!timesheet }
       md-content(flex layout='row')
         h3 {{getProjectNameDisplay(projectName)}}
 
-        md-button.edit-project-button.md-icon-button(ng-click='')
+        md-button.edit-project-button.md-icon-button(ng-click='openProjectMoveDialog($event)')
           md-icon(md-font-set="material-icons") edit
           md-tooltip Edit
 

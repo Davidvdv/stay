@@ -43,9 +43,8 @@ md-menu.task-menu-input(md-position-mode="target-right target")
     md-tooltip Menu
 
   md-menu-content(width='3')
-    //md-menu-item(ng-if=' ! isKnownProject(projectName)')
     md-menu-item()
-      md-button(ng-click='openProjectDialog($event, timesheet, $index, clientName, projectName)')
+      md-button(ng-click='openTaskMoveDialog($event, timesheet, $index, clientName, projectName)')
         md-icon(md-font-set="material-icons") edit
         | Set project
 

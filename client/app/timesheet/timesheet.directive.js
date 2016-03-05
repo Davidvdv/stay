@@ -18,7 +18,8 @@ angular.module('stayApp')
           scope.getProjectNameDisplay = getProjectNameDisplay
           scope.getClientNameDisplay = getClientNameDisplay;
           scope.isKnownProject = isKnownProject;
-          scope.openProjectDialog = openProjectDialog;
+          scope.openProjectMoveDialog = openProjectMoveDialog;
+          scope.openTaskMoveDialog = openTaskMoveDialog;
           scope.deleteTask = deleteTask;
           scope.addRow = addRow;
         }
@@ -33,7 +34,16 @@ angular.module('stayApp')
           return Timesheet.addRowToProject(scope.timesheet.id, clientName, projectName);
         }
 
-        function openProjectDialog($event, timesheet, taskIndex, clientName, projectName){
+        function openProjectMoveDialog($event){
+          return TimesheetDialog.openProjectDialog($event)
+            .then(accepted => {
+              if (accepted) {
+
+              }
+            });
+        }
+
+        function openTaskMoveDialog($event, timesheet, taskIndex, clientName, projectName){
           return TimesheetDialog.openProjectDialog($event)
             .then(accepted => {
               if(accepted){

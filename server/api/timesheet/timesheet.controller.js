@@ -125,6 +125,7 @@ function _getRawTimesheetEditResponse(user, id){
 
 export function searchProjects(req, res){
 
+  req.params = req.params || {};
   if(! req.user.ssoCookieKey){ return res.sendStatus(401); }
   if(! req.params.clientId || ! req.params.clientId.trim()){ return res.sendStatus(400);}
 

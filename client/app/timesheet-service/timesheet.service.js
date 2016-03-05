@@ -124,11 +124,12 @@ angular.module('stayApp')
     };
 
 
-    this.searchProjects = (client, query) => {
-      if(! client ){
+    this.searchProjects = (client, query = '') => {
+      if( ! client ){
         $log.warn('No client passed to search Projects');
         return $q.reject();
       }
+
       $log.debug('Searching projects', client, query);
 
       if(client.projects){
