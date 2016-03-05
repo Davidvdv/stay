@@ -1,4 +1,4 @@
-md-input-container.stretch-input(md-no-float="false")
+md-input-container.stretch-input.bold-input(md-no-float="false")
   label(ng-if='$first') Description
   input(type='input' tabindex="1" ng-model='task.description', placeholder='Description')
 
@@ -31,7 +31,7 @@ md-input-container.task-day-input(md-no-float="false")
   label(ng-if='$first') Fri
   input(type='number' tabindex="1" ng-model='task.sat', placeholder='Sat')
 
-md-input-container.task-day-input(md-no-float="false")
+md-input-container.task-day-input.bold-input(md-no-float="false")
   label(ng-if='$first') Total
   input(type='number' tabindex="1" ng-model='task.total', placeholder='Total')
 
