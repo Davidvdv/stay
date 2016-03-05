@@ -1,7 +1,7 @@
 {
   "name": "stay",
   "version": "0.0.0",
-  "main": "server/app.js",
+  "main": "dist/server/app.js",
   "dependencies": {
     "babel-runtime": "^5.8.20",
     "bluebird": "^2.9.34",
