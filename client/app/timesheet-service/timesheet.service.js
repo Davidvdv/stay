@@ -31,9 +31,51 @@ angular.module('stayApp')
       return timesheet.rows ? $q.when(timesheet) : $http.get(`/api/timesheets/${id}`)
         .then(response => {
           return _.merge(timesheet, response.data);
+        })
+        .then(timesheet => {
+          _.forEach(timesheet.rows, (projects, clientName) => {
+            $log.debug('clientName ', clientName);
+            $log.debug('this.getClientByName(clientName)', this.getClientByName(clientName));
+
+            return this.getClientByName(clientName)
+            .then(client => {
+                $log.debug('this.getClientByName(clientName)', client);
+
+                return this.searchProjects(client, '')
+                  .then(projects => {
+                    $log.debug('clientName projects', projects);
+                  });
+              })
+
+          });
+          return timesheet;
         }).catch(err => {
           $log.error(err);
         });
+    };
+
+    this.deleteTask = (timesheet, taskIndex, clientName, projectName) => {
+      let deletedTask = timesheet.rows[clientName][projectName].splice(taskIndex, 1);
+      return _.first(deletedTask);
+    };
+
+    this.moveTimesheetTask = (taskIndex, timesheet, fromClientName, fromProjectName, toClient, toProject) => {
+
+      $log.debug('moveTimesheetTask', timesheet, fromClientName, fromProjectName, taskIndex, toClient, toProject);
+
+      $log.warn(timesheet.rows[fromClientName][fromProjectName]);
+      //TODO do we want this to be immutable?
+      let moveTask = timesheet.rows[fromClientName][fromProjectName].splice(taskIndex, 1);
+      if(timesheet.rows[fromClientName][fromProjectName].length === 0){
+        timesheet.rows[fromClientName] = undefined;
+      }
+
+      timesheet.rows[toClient.name] = timesheet.rows[toClient.name] || {};
+      timesheet.rows[toClient.name][toProject.name] = timesheet.rows[toClient.name][toProject.name] || [];
+
+      //TODO will this screw with the rows id???? -> only on create/add row???
+      timesheet.rows[toClient.name][toProject.name].push(_.first(moveTask));
+
     };
 
     this.addRowToProject = (timesheetId, clientName, projectName, appendRow = this.getDefaultRow()) => {
@@ -62,7 +104,13 @@ angular.module('stayApp')
         .catch(err => {
           $log.error(err);
         });
+    };
 
+
+    this.getClientByName = (clientName) => {
+      return this.searchClients(clientName).then(clients => {
+        return _.first(clients);
+      });
     };
 
 
@@ -70,7 +118,7 @@ angular.module('stayApp')
       return this.getProjects()
         .then(projects => {
           return _(projects.clients).filter(client => {
-            return client.name.toLowerCase().indexOf(query) !== -1;
+            return client.name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
           }).value();
         });
     };
@@ -79,7 +127,7 @@ angular.module('stayApp')
     this.searchProjects = (client, query) => {
       if(! client ){
         $log.warn('No client passed to search Projects');
-        return [];
+        return $q.reject();
       }
       $log.debug('Searching projects', client, query);
 

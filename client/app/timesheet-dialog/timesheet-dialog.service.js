@@ -12,8 +12,6 @@ angular.module('stayApp')
       return this.openDialog('TimesheetDialogProjectCtrl', 'app/timesheet-dialog/timesheet-dialog-project/timesheet-dialog-project.html', $event);
     };
 
-    //$timeout(this.openProjectDialog, 500)
-
     this.openDialog = (controllerName, templateName, $event = {}) => {
       if( ! this.dialogActive){
         this.dialogActive = true;
@@ -24,9 +22,10 @@ angular.module('stayApp')
           targetEvent: $event,
           clickOutsideToClose: true
         })
-          .then(() => {
-            $log.debug('dialog action accepted');
+          .then(accepted => {
+            $log.debug('dialog action accepted', accepted);
             this.dialogActive = false;
+            return accepted;
           },
           () => {
             $log.debug('dialog action cancelled');

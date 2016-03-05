@@ -3,7 +3,7 @@ md-dialog.dialog.timesheet-dialog-project
   md-content(layout-padding)
 
 
-    md-autocomplete(ng-disabled='isDisabled', md-no-cache='noCache', md-selected-item='selectedClientItem',
+    md-autocomplete(ng-disabled='isDisabled', md-autofocus="true" md-no-cache='noCache', md-selected-item='selectedClientItem',
     md-search-text-change='searchClientTextChange(searchClientsText)', md-search-text='searchClientsText',
     md-selected-item-change='selectedClientItemChange(clientItem)', md-items='clientItem in searchClients(searchClientsText)',
     md-item-text='clientItem.name', md-min-length='0', placeholder='Enter the client name')
@@ -28,4 +28,4 @@ md-dialog.dialog.timesheet-dialog-project
 
 
 
-    md-button.md-raised.md-primary() Done
+    md-button.md-raised.md-primary(ng-click='complete($event, selectedClientItem, selectedProjectItem)') Done

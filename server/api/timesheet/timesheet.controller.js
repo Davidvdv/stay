@@ -368,7 +368,7 @@ function parseRowIdFromEditResponse(body, rowIndex){
 
   let $timesheetEditProjectSelect = $($('#timesheet_rows select').get(rowIndex * 4));
 
-  return $timesheetEditProjectSelect.attr('id').replace('week_row_', '').replace('_client_id', '');
+  return ($timesheetEditProjectSelect.attr('id') || '').replace('week_row_', '').replace('_client_id', '');
 }
 
 function parseDayIdsFromEditResponse(body, index){

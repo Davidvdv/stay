@@ -22,16 +22,22 @@ angular.module('stayApp')
         }
 
 
-        function deleteTask($event, task, $index){
-          $log.debug('deleteTask', task, $index);
+        function deleteTask($event, timesheet, taskIndex, clientName, projectName){
+          $log.debug('deleteTask', timesheet, taskIndex, clientName, projectName);
+          return Timesheet.deleteTask(timesheet, taskIndex, clientName, projectName);
         }
 
         function addRow(clientName, projectName){
           return Timesheet.addRowToProject(scope.timesheet.id, clientName, projectName);
         }
 
-        function openProjectDialog($event){
-          return TimesheetDialog.openProjectDialog($event);
+        function openProjectDialog($event, timesheet, taskIndex, clientName, projectName){
+          return TimesheetDialog.openProjectDialog($event)
+            .then(accepted => {
+              if(accepted){
+                return Timesheet.moveTimesheetTask(taskIndex, timesheet, clientName, projectName, accepted.clientItem, accepted.projectItem);
+              }
+            });
         }
 
         function isKnownProject(projectName){

@@ -4,25 +4,79 @@
   width: 60px;
 }
 
+.stretch-input {
+  flex-grow: 1;
+}
+
+
+
 
 
 md-content.task {
 
   flex-wrap: wrap;
 
+  padding: 0 0 0 8px;
+
   @media(min-width: @screen-md-min){
     flex-wrap: nowrap;
+    height: 48px;
+    md-input-container {
+      margin: 2px 0;
+    }
   }
 
   md-input-container {
-    margin: 2px 0;
+
+    padding-bottom: 0;
+    .md-errors-spacer {
+      display: none;
+    }
+  }
+
+  md-menu.md-menu {
+    margin-top: -14px;
+
+    padding: 8px 0 10px;
   }
 }
 
 
+.md-button.md-icon-button.edit-project-button {
+  margin: 10px 6px 0;
+}
+
+md-content.client {
+
+  h1 {
+    color: @blue;
+    margin: 6px 0 0 0;
+  }
+  @media(min-width: @screen-md-min){
+    margin: 26px 40px 26px 0;
+
+    h1 {
+      position: absolute;
+      right: 30px;
+      top: 0;
+      margin-top: 20px;
+    }
+  }
+}
+
+
+md-content.bottom-actions {
+  button.md-button{
+    align-self: flex-end;
+  }
+}
 
 md-content.project {
-  margin-bottom: 20px;
+  margin: 5px 0;
+
+  h3 {
+    color: @heading-grey;
+  }
 }
 
 md-content.project,

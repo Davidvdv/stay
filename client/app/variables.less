@@ -3,6 +3,18 @@
 @sidenav-width: 275px;
 
 
+.show-collapsed-menu {
+  @media(min-width: @screen-md-min){
+    display: none;
+  }
+}
+
+.hide-collapsed-menu {
+  @media(max-width: @screen-sm-max){
+    display: none;
+  }
+}
+
 
 //== Media queries breakpoints
 //

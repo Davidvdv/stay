@@ -14,10 +14,14 @@ angular.module('stayApp')
         return init();
 
         function init(){
+          scope.isTimesheetActive = isTimesheetActive;
           scope.gotoTimesheet = gotoTimesheet;
           scope.getTimesheetLabel = getTimesheetLabel;
         }
 
+        function isTimesheetActive(timesheet){
+          return $stateParams.id === timesheet.id;
+        }
 
         function gotoTimesheet(timesheet){
           $log.debug('gotoTimesheet', timesheet);

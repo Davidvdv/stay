@@ -10,6 +10,8 @@ angular.module('stayApp')
      */
     function init(){
 
+      $scope.complete = complete;
+      $scope.selectedClientItemChange = selectedClientItemChange;
       $scope.closeDialog = closeDialog;
       $scope.searchProjects = Timesheet.searchProjects;
       $scope.searchClients = Timesheet.searchClients;
@@ -18,11 +20,16 @@ angular.module('stayApp')
 
     }
 
-    /**
-     *
-     */
     function closeDialog(){
       return $mdDialog.close();
+    }
+
+    function selectedClientItemChange(clientItem){
+      return $scope.searchProjects(clientItem, '');
+    }
+
+    function complete($event, clientItem, projectItem){
+      return $mdDialog.hide({clientItem, projectItem});
     }
 
 

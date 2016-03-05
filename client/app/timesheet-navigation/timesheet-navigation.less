@@ -6,4 +6,22 @@ md-sidenav {
   & > md-content {
     min-width: @sidenav-width;
   }
+
+  .is-active .md-list-item-inner{
+    font-weight: 700 !important;
+    color: @blue;
+
+    md-icon.timesheet-approved-tick {
+      color: @blue;
+    }
+  }
+
+
+
+}
+
+md-icon.timesheet-approved-tick {
+  align-self: flex-end;
+
+  margin: 0 0 12px auto !important;
 }

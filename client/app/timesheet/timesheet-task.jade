@@ -1,62 +1,55 @@
-md-input-container
-  label Description
-  input(type='input' ng-model='task.description')
+md-input-container.stretch-input(md-no-float="false")
+  label(ng-if='$first') Description
+  input(type='input' tabindex="1" ng-model='task.description', placeholder='Description')
 
-md-input-container
-  label Activity
-  input(type='input' ng-model='task.activity')
+md-input-container.stretch-input(md-no-float="{{ ! $first}}")
+  label(ng-if='$first') Activity
+  input(type='input' tabindex="1" ng-model='task.activity', placeholder='{{$first ? "": "Activity"}}')
 
-md-input-container
-  label Task
-  input(type='input' ng-model='task.task')
+md-input-container.stretch-input(md-no-float="false")
+  label(ng-if='$first') Task
+  input(type='input' tabindex="1" ng-model='task.task', placeholder='Task')
 
 
-md-input-container.task-day-input
-  label Mon
-  input(type='number' ng-model='task.mon')
+md-input-container.task-day-input(md-no-float="false")
+  label(ng-if='$first') Mon
+  input(type='number' tabindex="1" ng-model='task.mon', placeholder='Mon')
 
-md-input-container.task-day-input
-  label Tue
-  input(type='number' ng-model='task.tue')
+md-input-container.task-day-input(md-no-float="false")
+  label(ng-if='$first') Tue
+  input(type='number' tabindex="1" ng-model='task.tue', placeholder='Tue')
 
-md-input-container.task-day-input
-  label Wed
-  input(type='number' ng-model='task.wed')
+md-input-container.task-day-input(md-no-float="false")
+  label(ng-if='$first') Wed
+  input(type='number' tabindex="1" ng-model='task.wed', placeholder='Wed')
 
-md-input-container.task-day-input
-  label Thu
-  input(type='number' ng-model='task.thu')
+md-input-container.task-day-input(md-no-float="false")
+  label(ng-if='$first') Thu
+  input(type='number' tabindex="1" ng-model='task.thu', placeholder='Thu')
 
-md-input-container.task-day-input
-  label Fri
-  input(type='number' ng-model='task.sat')
+md-input-container.task-day-input(md-no-float="false")
+  label(ng-if='$first') Fri
+  input(type='number' tabindex="1" ng-model='task.sat', placeholder='Sat')
 
-//md-input-container.task-day-input
-  label Mon
-  input(type='number' ng-model='task.mon')
-
-//md-input-container.task-day-input
-  label Mon
-  input(type='number' ng-model='task.mon')
-
-md-input-container.task-day-input
-  label Total
-  input(type='number' ng-model='task.total')
+md-input-container.task-day-input(md-no-float="false")
+  label(ng-if='$first') Total
+  input(type='number' tabindex="1" ng-model='task.total', placeholder='Total')
 
 
 md-menu(md-position-mode="target-right target")
-  md-button.md-icon-button(aria-label='Open timesheet menu', ng-click='$mdOpenMenu($event)',)
+  md-button.md-icon-button(tabindex="1" aria-label='Open timesheet menu', ng-click='$mdOpenMenu($event)',)
     md-icon(md-menu-origin='', md-svg-icon='assets/icons/more.svg')
 
   md-menu-content(width='3')
     //md-menu-item(ng-if=' ! isKnownProject(projectName)')
     md-menu-item()
-      md-button(ng-click='openProjectDialog($event)')
-        //md-icon(md-menu-align-target='', md-svg-icon='call:no-sim')
+      md-button(ng-click='openProjectDialog($event, timesheet, $index, clientName, projectName)')
+        md-icon(md-font-set="material-icons") edit
         | Set project
+
     md-menu-item
-      md-button(ng-click='deleteTask($event, task, $index)')
-        //md-icon(md-menu-align-target='', md-svg-icon='call:no-sim')
+      md-button(ng-click='deleteTask($event, timesheet, $index, clientName, projectName)')
+        md-icon(md-font-set="material-icons") delete
         | Delete
 
 
