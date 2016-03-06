@@ -1,13 +1,16 @@
 'use strict';
 
 angular.module('stayApp')
-  .service('Timesheet', function ($window, $http, $log, $q, $localStorage) {
+  .service('Timesheet', function ($window, $http, $log, $q, $localStorage, User) {
 
 
-    this.timesheets = $localStorage.timesheets = $window.timesheets || $localStorage.timesheets || {};
-    this.projects = $localStorage.projects = $window.projects || $localStorage.projects || {};
+    this.timesheets = $localStorage.timesheets = $window.timesheets || $localStorage.timesheets || undefined;
+    this.projects = $localStorage.projects = $window.projects || $localStorage.projects || undefined;
+
+    //TODO clear localstorage on logout?
 
 
+    //TODO namespace with username
     this.getTimesheets = ({force} = {}) => {
       return this.timesheets && ! force ? $q.when(this.timesheets) : $http.get('/api/timesheets', {cache: true})
         .then(response => {
@@ -30,6 +33,9 @@ angular.module('stayApp')
     this.getTimesheet = (id) => {
 
       var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
+
+
+      //TODO we should force this sometimes? mark them on getTimesheets() force
 
       return timesheet.rows ? $q.when(timesheet) : $http.get(`/api/timesheets/${id}`)
         .then(response => {
@@ -114,7 +120,7 @@ angular.module('stayApp')
 
 
     this.getProjects = ({force} = {}) => {
-      return this.projects ? $q.when(this.projects) : $http.get(`/api/timesheets/projects`, {cache: true})
+      return this.projects ? $q.when(this.projects) : $http.get(`/api/timesheets/projects`, { cache: true })
         .then(response => {
           this.projects = response.data;
           $localStorage.projects = response.data;
