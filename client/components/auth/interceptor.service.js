@@ -4,7 +4,7 @@
 
 function authInterceptor($rootScope, $q, $cookies, $injector, Util) {
   var state;
-  var Auth;
+  var Timesheet;
   return {
     // Add authorization token to headers
     request(config) {
@@ -22,8 +22,8 @@ function authInterceptor($rootScope, $q, $cookies, $injector, Util) {
         // remove any stale tokens
         $cookies.remove('token');
 
-        (Auth || (Auth = $injector.get('Auth'))).clearProjectsCache();
-        (Auth || (Auth = $injector.get('Auth'))).clearTimesheetsCache();
+        (Timesheet || (Timesheet = $injector.get('Timesheet'))).clearProjectsCache();
+        (Timesheet || (Timesheet = $injector.get('Timesheet'))).clearTimesheetsCache();
       }
       return $q.reject(response);
     }
