@@ -2,7 +2,7 @@
 
 (function() {
 
-function AuthService($location, $http, $cookies, $q, $state, appConfig, Util, User) {
+function AuthService($location, $http, $cookies, $q, $state, appConfig, Util, User, Timesheet) {
   var safeCb = Util.safeCb;
   var currentUser = {};
   var userRoles = appConfig.userRoles || [];
@@ -45,6 +45,10 @@ function AuthService($location, $http, $cookies, $q, $state, appConfig, Util, Us
      * Delete access token and user info
      */
     logout() {
+
+      Timesheet.clearTimesheetsCache();
+      Timesheet.clearProjectsCache();
+
       $cookies.remove('token');
       currentUser = {};
       $state.go('login');

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .service('Timesheet', function ($window, $http, $log, $q, $localStorage, User) {
+  .service('Timesheet', function ($window, $http, $log, $q, $localStorage) {
 
 
     this.timesheets = $localStorage.timesheets = $window.timesheets || $localStorage.timesheets || undefined;
@@ -9,6 +9,14 @@ angular.module('stayApp')
 
     //TODO clear localstorage on logout?
 
+    this.clearTimesheetsCache = () => {
+      this.timesheets = undefined;
+      return $localStorage.timesheets = undefined;
+    };
+    this.clearProjectsCache = () => {
+      this.projects = undefined;
+      return $localStorage.projects = undefined;
+    };
 
     //TODO namespace with username
     this.getTimesheets = ({force} = {}) => {
