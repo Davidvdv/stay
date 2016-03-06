@@ -24,9 +24,17 @@ angular.module('stayApp')
           scope.addRow = addRow;
           scope.getTaskTotal = getTaskTotal;
 
+          scope.setupTotalWatcher = setupTotalTaskWatcher;
+
           $timeout(() => {scope.isLoaded = true;})
         };
 
+
+        function setupTotalTaskWatcher(task){
+          scope.$watch(task, () => {
+            task.total = getTaskTotal(task);
+          });
+        }
 
         function deleteTask($event, timesheet, taskIndex, clientName, projectName){
           $log.debug('deleteTask', timesheet, taskIndex, clientName, projectName);

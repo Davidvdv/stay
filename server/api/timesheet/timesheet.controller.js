@@ -52,7 +52,8 @@ export function getTimesheets(req, res) {
   return _getTimesheets(req.user, req.params.timesheetPage)
     .then((timesheets = []) => {
 
-      //TODO if there are non in the future - go create one
+      console.log('Check to see if we should create a new timesheet for the current week', timesheets[0].endDatePretty, timesheets[0].endDatePretty.indexOf('in') === -1);
+      
       if(timesheets[0] && timesheets[0].endDatePretty.indexOf('in') === -1){
 
         let format = 'YYYY-M-D';
@@ -60,6 +61,9 @@ export function getTimesheets(req, res) {
         let today = moment().format(format);
 
         let sundayDate = date === today ? moment().add(7, 'days').format(format) : date;
+
+
+        console.log(`date:${date}, today:${today}, sundayDate:${sundayDate}`);
 
         return _createTimesheetRaw(user, sundayDate)
           .then(timesheetRaw => {
