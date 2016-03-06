@@ -1,24 +1,24 @@
 'use strict';
 
 angular.module('stayApp')
-  .service('Timesheet', function ($window, $http, $log, $q) {
+  .service('Timesheet', function ($window, $http, $log, $q, $localStorage) {
 
 
-    this.timesheets = $window.timesheets || undefined;
-    this.projects = $window.projects || undefined;
+    this.timesheets = $localStorage.timesheets = $window.timesheets || $localStorage.timesheets || {};
+    this.projects = $localStorage.projects = $window.projects || $localStorage.projects || {};
 
 
-    this.getTimesheets = () => {
-      return this.timesheets ? $q.when(this.timesheets) : $http.get('/api/timesheets', {cache: true})
+    this.getTimesheets = ({force}) => {
+      return this.timesheets && ! force ? $q.when(this.timesheets) : $http.get('/api/timesheets', {cache: true})
         .then(response => {
           this.timesheets = response.data.timesheets;
+          $localStorage.timesheets = response.data.timesheets;
         })
         .then(this.getTimesheets)
         .catch(err => {
         $log.error(err);
       });
     };
-
 
     this.getFirstTimesheet = (timesheets) => {
       return this.getTimesheet(timesheets[0].id);
@@ -95,10 +95,11 @@ angular.module('stayApp')
     };
 
 
-    this.getProjects = () => {
+    this.getProjects = ({force}) => {
       return this.projects ? $q.when(this.projects) : $http.get(`/api/timesheets/projects`, {cache: true})
         .then(response => {
           this.projects = response.data;
+          $localStorage.projects = response.data;
         })
         .then(this.getProjects)
         .catch(err => {

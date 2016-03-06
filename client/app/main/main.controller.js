@@ -12,16 +12,33 @@ class MainController {
         this.projects = projects;
       });
 
+    // Refreshed cached content
+    Timesheet.getTimesheets({force: true});
+    Timesheet.getProjects({force: true});
+
+
+
 
     const getTimesheets = () => {
-      return Timesheet.getTimesheets()
-        .then(timesheets => {
+
+      let timesheetPromise = [
+        Timesheet.getTimesheets()
+      ];
+      if($state.params.id){
+        timesheetPromise.push(Timesheet.getTimesheet($state.params.id));
+      }
+
+      return Promise.all(timesheetPromise)
+        .then(([timesheets, timesheet]) => {
 
           $log.debug($state);
           $log.debug('timesheets', $state.params.id, timesheets);
 
           this.timesheets = timesheets;
 
+          if(timesheet){
+            return [timesheets, timesheet];
+          }
           if ($state.params.id) {
             return [timesheets, Timesheet.getTimesheet($state.params.id)];
           }
