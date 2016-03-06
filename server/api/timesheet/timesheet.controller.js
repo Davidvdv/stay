@@ -48,10 +48,10 @@ export function getTimesheets(req, res) {
   req.params.timesheetPage = req.params.timesheetPage || 1;
 
   return _getTimesheets(req.user, req.params.timesheetPage)
-    .then(timesheets => {
+    .then((timesheets = []) => {
 
       //TODO if there are non in the future - go create one
-      if(timesheets[0].endDatePretty.indexOf('in') === -1){
+      if(timesheets[0] && timesheets[0].endDatePretty.indexOf('in') === -1){
 
         let format = 'YYYY-M-D';
         let date = moment.day('Sunday').format(format);

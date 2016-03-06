@@ -41,7 +41,7 @@ angular.module('stayApp')
           return task.total = getTaskNumber(task.mon) + getTaskNumber(task.tue) + getTaskNumber(task.wed) + getTaskNumber(task.thu)
             + getTaskNumber(task.fri) + getTaskNumber(task.sat) + getTaskNumber(task.sun);
         }
-        
+
         function getTaskNumber(day){
           return typeof day === 'number' ? day : (isNaN(parseInt(day)) ? 0 : parseInt(day) );
         }
