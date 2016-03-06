@@ -23,14 +23,14 @@ class MainController {
           this.timesheets = timesheets;
 
           if ($state.params.id) {
-            return Timesheet.getTimesheet($state.params.id);
+            return [timesheets, Timesheet.getTimesheet($state.params.id)];
           }
           else {
-            return Timesheet.getFirstTimesheet(timesheets);
+            return [timesheets, Timesheet.getFirstTimesheet(timesheets)];
           }
 
         })
-        .then(currentTimesheet => {
+        .then(([timesheets, currentTimesheet]) => {
 
           $log.debug('currentTimesheet', $state.params, currentTimesheet);
 
@@ -42,6 +42,21 @@ class MainController {
             $timeout(() => {
               this.loadingCurrentTimesheet = false;
             });
+
+            try {
+              //Preload next timesheet
+              $log.debug('Preloading next timesheet');
+              let index = _(timesheets).map((timesheet, index) => {
+                if(timesheet.id === currentTimesheet.id){
+                  return index;
+                }
+              }).first();
+              $log.debug('Preloading next timesheet', index);
+
+              return Timesheet.getTimesheet(timesheets && timesheets[index].id);
+            }
+            catch(err){$log.error(err);}
+
           }
         });
     };
