@@ -15,6 +15,17 @@ class LoginController {
     this.$timeout = $timeout;
 
     this.user.email = this.$localStorage.email || '';
+
+
+    $timeout(() => {
+      if(this.user.email) {
+        angular.element(document.getElementById('password-input')).focus();
+      }
+      else {
+        angular.element(document.getElementById('username-input')).focus();
+      }
+    })
+
   }
 
   onUsernameBlur($event) {
