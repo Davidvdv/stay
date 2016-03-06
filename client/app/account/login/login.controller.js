@@ -20,6 +20,10 @@ class LoginController {
     this.submitted = true;
     this.submiting = true;
 
+    if(this.submiting){
+      return;
+    }
+
     if (form.$valid) {
       this.Auth.login({
         email: this.user.email.trim(),

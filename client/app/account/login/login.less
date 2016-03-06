@@ -23,12 +23,18 @@
     font-weight: 700;
   }
 
-  input.username-input {
+  .username-input {
 
     background-color: @background;
-    &.username-exists {
+    .username-exists {
       border-color: transparent;
     }
+    &:hover {
+      .md-icon-button.clear-user-button {
+        opacity: 1;
+      }
+    }
+
   }
 
 
@@ -39,11 +45,24 @@
   input[type="password"]::-webkit-input-placeholder {letter-spacing: 0em;}
 
 
+  .md-icon-button.clear-user-button {
+    position: absolute;
+    right: 0;
+    top: -6px;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
 
 
   md-input-container {
     margin: 0;
     flex-grow: 1;
+    position: relative;
+  }
+
+  md-input-container.md-has-icon {
+    padding-left: 0;
   }
 
   .login-button {
