@@ -11,8 +11,11 @@ angular.module('stayApp')
     this.getTimesheets = ({force}) => {
       return this.timesheets && ! force ? $q.when(this.timesheets) : $http.get('/api/timesheets', {cache: true})
         .then(response => {
+
+          //TODO should really merge these
           this.timesheets = response.data.timesheets;
           $localStorage.timesheets = response.data.timesheets;
+
         })
         .then(this.getTimesheets)
         .catch(err => {
@@ -30,6 +33,7 @@ angular.module('stayApp')
 
       return timesheet.rows ? $q.when(timesheet) : $http.get(`/api/timesheets/${id}`)
         .then(response => {
+          //TODO should merge into timesheets if possible
           return _.merge(timesheet, response.data);
         })
         .then(timesheet => {
