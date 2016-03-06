@@ -22,6 +22,7 @@ angular.module('stayApp')
           scope.openTaskMoveDialog = openTaskMoveDialog;
           scope.deleteTask = deleteTask;
           scope.addRow = addRow;
+          scope.getTaskTotal = getTaskTotal;
 
           $timeout(() => {scope.isLoaded = true;})
         };
@@ -34,6 +35,15 @@ angular.module('stayApp')
 
         function addRow(clientName, projectName){
           return Timesheet.addRowToProject(scope.timesheet.id, clientName, projectName);
+        }
+
+        function getTaskTotal(task){
+          return task.total = getTaskNumber(task.mon) + getTaskNumber(task.tue) + getTaskNumber(task.wed) + getTaskNumber(task.thu)
+            + getTaskNumber(task.fri) + getTaskNumber(task.sat) + getTaskNumber(task.sun);
+        }
+        
+        function getTaskNumber(day){
+          return typeof day === 'number' ? day : (isNaN(parseInt(day)) ? 0 : parseInt(day) );
         }
 
         function openProjectMoveDialog($event){

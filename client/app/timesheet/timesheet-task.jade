@@ -34,7 +34,7 @@ md-input-container.task-day-input(md-no-float="true")
 
 md-input-container.task-total-input.bold-input(md-no-float="true")
   label(ng-if='$first') Total
-  input(type='number' tabindex="1" min='0' max='99' ng-init="task.total=task.total||0" ng-model='task.total')
+  input(type='number' tabindex="1" min='0' max='99' ng-init="task.total=task.total||0" ng-model='getTaskTotal(task)')
 
 
 md-menu.task-menu-input(md-position-mode="target-right target")
