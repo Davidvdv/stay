@@ -37,13 +37,14 @@ class LoginController {
 
   login(form) {
     this.submitted = true;
-    this.submiting = true;
+
 
     if(this.submiting){
       return;
     }
 
     if (form.$valid) {
+      this.submiting = true;
       this.Auth.login({
         email: this.user.email.trim(),
         password: this.user.password

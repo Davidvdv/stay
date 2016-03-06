@@ -7,7 +7,7 @@ md-content.login-content(layout='column' layout-align='space-between center')
     section(layout='column' flex)
 
       md-input-container.username-input(md-no-float="true")
-        input(id='username-input' type='input', name='email', ng-model='vm.user.email', placeholder='Username (eg ab1234)'
+        input(id='username-input' type='input', name='email', ng-model='vm.user.email', placeholder='Username (eg ab1234)', ng-required='true'
           tabindex='{{::vm.user.email ? "5" : "1"}}', ng-keypress='vm.error = false'
           ng-focus='vm.focus.email = true' ng-blur='vm.onUsernameBlur()', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
 
@@ -16,7 +16,7 @@ md-content.login-content(layout='column' layout-align='space-between center')
 
       section(layout='row' flex)
         md-input-container(md-no-float="true")
-          input(type='password', name='password', ng-keypress='vm.error = false' ng-model='vm.user.password', placeholder='Enter password'
+          input(type='password', name='password', ng-keypress='vm.error = false' ng-model='vm.user.password', placeholder='Enter password', ng-required='true'
             tabindex='{{::vm.user.email ? "1" : "2"}}')
 
 
