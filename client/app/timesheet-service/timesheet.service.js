@@ -8,7 +8,7 @@ angular.module('stayApp')
     this.projects = $localStorage.projects = $window.projects || $localStorage.projects || {};
 
 
-    this.getTimesheets = ({force}) => {
+    this.getTimesheets = ({force} = {}) => {
       return this.timesheets && ! force ? $q.when(this.timesheets) : $http.get('/api/timesheets', {cache: true})
         .then(response => {
 
@@ -99,7 +99,7 @@ angular.module('stayApp')
     };
 
 
-    this.getProjects = ({force}) => {
+    this.getProjects = ({force} = {}) => {
       return this.projects ? $q.when(this.projects) : $http.get(`/api/timesheets/projects`, {cache: true})
         .then(response => {
           this.projects = response.data;
