@@ -52,7 +52,7 @@ export function getTimesheets(req, res) {
   return _getTimesheets(req.user, req.params.timesheetPage)
     .then((timesheets = []) => {
 
-      console.log('Check to see if we should create a new timesheet for the current week', timesheets[0].endDatePretty, timesheets[0].endDatePretty.indexOf('in') === -1);
+      console.log('Check to see if we should create a new timesheet for the current week', timesheets[0] && timesheets[0].endDatePretty, timesheets[0] && timesheets[0].endDatePretty && timesheets[0].endDatePretty.indexOf('in') === -1);
 
       if(timesheets[0] && timesheets[0].endDatePretty.indexOf('in') === -1){
 
