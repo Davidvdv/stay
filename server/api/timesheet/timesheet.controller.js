@@ -25,11 +25,13 @@ function logit(string, r){
   console.log(string, r);
 }
 
+let prevPath = '';
 var moo = _.once(logit);
 requestDebug(request, function(type, data, r) {
 
   // put your request or response handling logic here
-  if(type === 'request'){
+  if(type === 'request' && prevPath !== r.path){
+    prevPath = r.path;
     console.log(`YATS REQUEST ${r.path}`);
     //moo('requestInstance', r);
   }
