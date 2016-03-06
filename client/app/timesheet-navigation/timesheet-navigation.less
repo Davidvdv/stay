@@ -5,11 +5,14 @@ md-sidenav {
 
 
 
+  flex-direction: row;
+  overflow-y: auto;
   overflow-x: hidden;
 
   max-width: @sidenav-width;
   & > md-content {
     min-width: @sidenav-width;
+    align-self: center;
   }
 
   .md-list-item-inner {
@@ -25,10 +28,6 @@ md-sidenav {
     }
   }
 
-
-  md-list {
-    margin-top: 30px;
-  }
 
   background-color: transparent;
   md-content {
