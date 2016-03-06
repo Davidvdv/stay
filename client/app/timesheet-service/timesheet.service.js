@@ -12,10 +12,10 @@ angular.module('stayApp')
       return this.timesheets && ! force ? $q.when(this.timesheets) : $http.get('/api/timesheets', {cache: true})
         .then(response => {
 
-          //TODO should really merge these
-          this.timesheets = response.data.timesheets;
-          $localStorage.timesheets = response.data.timesheets;
-
+          // Merge the timesheets in
+          $localStorage.timesheets = this.timesheets = _(response.data.timesheets).map(responseTimesheet => {
+            return _.merge(_.find(this.timesheets, {id: responseTimesheet .id}) || {}, responseTimesheet);
+          }).value();
         })
         .then(this.getTimesheets)
         .catch(err => {
@@ -33,8 +33,22 @@ angular.module('stayApp')
 
       return timesheet.rows ? $q.when(timesheet) : $http.get(`/api/timesheets/${id}`)
         .then(response => {
+
           //TODO should merge into timesheets if possible
-          return _.merge(timesheet, response.data);
+          //TODO clean up
+          //if the timesheet is still not there then wait for this.getTimesheets
+          var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
+          if(!timesheet || !timesheet.row){
+            return this.getTimesheets()
+            .then(timesheets => {
+                var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
+                return _.merge(timesheet, response.data);
+              });
+          }
+          else {
+            return _.merge(timesheet, response.data);
+          }
+
         })
         .then(timesheet => {
           _.forEach(timesheet.rows, (projects, clientName) => {
