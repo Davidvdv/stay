@@ -37,7 +37,7 @@ md-input-container.task-total-input.bold-input(md-no-float="true")
   input(type='number' tabindex="1" min='0' max='99' ng-init="(task.total=task.total || 0) && setupTotalTaskWatcher(task)" ng-model='task.total')
 
 
-md-menu.task-menu-input(md-position-mode="target-right target" ng-hide='$mdMedia("gt-lg)"')
+md-menu.task-menu-input(md-position-mode="target-right target" ng-hide='$mdMedia("gt-lg")')
   md-button.md-icon-button(tabindex="1" aria-label='Open timesheet menu', ng-click='$mdOpenMenu($event)',)
     md-icon(md-font-set="material-icons") more_vert
     //md-tooltip Menu
@@ -54,13 +54,13 @@ md-menu.task-menu-input(md-position-mode="target-right target" ng-hide='$mdMedia
         | Delete
 
 
-md-menu-item(ng-show='$mdMedia("gt-lg)"')
+md-menu-item(ng-show='$mdMedia("gt-lg")')
   md-button(ng-click='openTaskMoveDialog($event, timesheet, $index, clientName, projectName)')
     md-icon(md-font-set="material-icons") edit
     | Set project
 
 
-md-menu-item(ng-show='$mdMedia("gt-lg)"')
+md-menu-item(ng-show='$mdMedia("gt-lg")')
   md-button(ng-click='deleteTask($event, timesheet, $index, clientName, projectName)')
     md-icon(md-font-set="material-icons") delete
     | Delete
