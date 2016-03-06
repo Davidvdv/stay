@@ -1,26 +1,20 @@
 
-.container
-  .row
-    .col-sm-12
-      h1 Login
-      p Use your LETO credentials - eg ab1234
 
-    .col-sm-12
-      form.form(name='form', ng-submit='vm.login(form)', novalidate='')
-        .form-group
-          label Username
-          input.form-control(type='input', name='email', ng-model='vm.user.email')
-        .form-group
-          label Password
-          input.form-control(type='password', name='password', ng-model='vm.user.password')
+md-content.login-content(layout='column' layout-align='space-between center')
 
-        .form-group.has-error
-          p.help-block(ng-show='form.email.$error.required && form.password.$error.required && vm.submitted')
-            | Please enter your email and password.
-          p.help-block {{ vm.errors.other }}
+  form.form(name='form', ng-submit='vm.login(form)', novalidate='' layout='row' flex)
 
-        div
-          button.btn.btn-inverse.btn-lg.btn-login(type='submit')
-            | Login
+    section(layout='column' flex)
 
-  hr
+      md-input-container(md-no-float="true")
+        input.username-input(type='input', name='email', ng-model='vm.user.email', placeholder='Username'
+          tabindex='{{vm.user.email ? "-1" : "1"}}'
+          ng-focus='vm.focus.email = true' ng-blur='vm.focus.email = false', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
+
+      md-input-container(md-no-float="true")
+        input(type='password', name='password', ng-model='vm.user.password', placeholder='Password'
+          tabindex='{{vm.user.email ? "1" : "2"}}')
+
+
+      md-button.login-button.md-raised.md-primary(type='submit', tabindex='3') Login
+

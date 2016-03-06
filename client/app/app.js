@@ -5,6 +5,7 @@ angular.module('stayApp', [
   'stayApp.constants',
   'ngCookies',
   'ngResource',
+  'ngStorage',
   'ngSanitize',
   'ngMaterial',
   'btford.socket-io',

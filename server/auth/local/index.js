@@ -9,12 +9,8 @@ import Promise from 'bluebird';
 import _ from 'lodash';
 import User from '../../api/user/user.model';
 
-const cookieJar = request.jar();
-const requestCookie = request.defaults({jar: cookieJar});
 
 
-Promise.promisifyAll(requestCookie);
-Promise.promisifyAll(requestCookie.prototype);
 
 
 var router = express.Router();
@@ -30,10 +26,15 @@ const qs = {
 
 router.post('/', function(req, res, next) {
 
+  const cookieJar = request.jar();
+  const requestCookie = request.defaults({jar: cookieJar});
+  Promise.promisifyAll(requestCookie);
+  Promise.promisifyAll(requestCookie.prototype);
+  
   const email = req.body.email;
 
-  return getLoginScreen()
-    .then(loginWithCredentials(email, req.body.password))
+  return getLoginScreen(requestCookie)
+    .then(loginWithCredentials(requestCookie, email, req.body.password))
     .then(function([response]){
 
       var ssoCookie = _(cookieJar.getCookies(url)).filter(function(cookie){
@@ -76,14 +77,15 @@ export default router;
 
 
 
-function getLoginScreen(){
+function getLoginScreen(requestCookie){
+
   return requestCookie.getAsync({
     url: url,
     qs: qs
   });
 }
 
-function loginWithCredentials(username, password){
+function loginWithCredentials(requestCookie, username, password){
   return function([response, loginPage]){
 
     var $ = cheerio.load(loginPage);

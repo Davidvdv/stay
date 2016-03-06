@@ -31,6 +31,7 @@ module.exports = function(config) {
       'client/bower_components/angular-messages/angular-messages.js',
       'client/bower_components/angular-material/angular-material.js',
       'client/bower_components/moment/moment.js',
+      'client/bower_components/ngstorage/ngStorage.js',
       'client/bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'node_modules/socket.io-client/socket.io.js',

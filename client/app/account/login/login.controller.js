@@ -7,9 +7,12 @@ class LoginController {
   submitted = false;
   //end-non-standard
 
-  constructor(Auth, $state) {
+  constructor(Auth, $state, $localStorage) {
     this.Auth = Auth;
     this.$state = $state;
+    this.$localStorage = $localStorage;
+
+    this.user.email = this.$localStorage.email || '';
   }
 
   login(form) {
@@ -21,6 +24,7 @@ class LoginController {
         password: this.user.password
       })
       .then(() => {
+        this.$localStorage.email = this.user.email;
         // Logged in, redirect to home
         this.$state.go('main.timesheet');
       })
