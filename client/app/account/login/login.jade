@@ -11,7 +11,7 @@ md-content.login-content(layout='column' layout-align='space-between center')
           tabindex='{{::vm.user.email ? "5" : "1"}}', ng-keypress='vm.error = false'
           ng-focus='vm.focus.email = true' ng-blur='vm.onUsernameBlur()', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
 
-        md-button.md-icon-button.clear-user-button(tabindex='-1' ng-click='vm.clearUsername($event)')
+        md-button.md-icon-button.clear-user-button(ng-class='{"fade-in": vm.user.email}' tabindex='-1' ng-click='vm.clearUsername($event)')
           md-icon(md-font-set="material-icons") clear
 
       section(layout='row' flex)
