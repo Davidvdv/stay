@@ -4,7 +4,7 @@
 
 class MainController {
 
-  constructor($scope, $log, Timesheet, $state, $stateParams, $rootScope, $timeout) {
+  constructor($scope, $log, Timesheet, $state, $stateParams, $rootScope, $timeout, $q) {
 
     Timesheet.getProjects()
       .then(projects => {
@@ -17,22 +17,19 @@ class MainController {
     Timesheet.getProjects({force: true});
 
 
-
-
     const getTimesheets = () => {
 
-      let timesheetPromise = [
-        Timesheet.getTimesheets()
-      ];
-      if($state.params && $state.params.id){
+      let timesheetPromise = [ Timesheet.getTimesheets() ];
+      if($state.params && $state.params.id && $state.params.id.trim()){
         timesheetPromise.push(Timesheet.getTimesheet($state.params.id));
       }
 
       return Promise.all(timesheetPromise)
         .then(([timesheets, timesheet]) => {
 
-          $log.debug($state);
-          $log.debug('timesheets', $state.params.id, timesheets);
+          $log.debug('currentState', $state, $state.params);
+          $log.debug('timesheets', timesheets);
+          $log.debug('currentTimesheet?', timesheet);
 
           this.timesheets = timesheets;
 
@@ -40,10 +37,10 @@ class MainController {
             return [timesheets, timesheet];
           }
           if ($state.params.id) {
-            return [timesheets, Timesheet.getTimesheet($state.params.id)];
+            return $q.all([$q.resolve(timesheets), Timesheet.getTimesheet($state.params.id)]);
           }
           else {
-            return [timesheets, Timesheet.getFirstTimesheet(timesheets)];
+            return $q.all([$q.resolve(timesheets), Timesheet.getFirstTimesheet(timesheets)]);
           }
 
         })
