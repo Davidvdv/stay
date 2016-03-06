@@ -11,10 +11,13 @@ md-content.login-content(layout='column' layout-align='space-between center')
           tabindex='{{vm.user.email ? "-1" : "1"}}'
           ng-focus='vm.focus.email = true' ng-blur='vm.focus.email = false', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
 
-      md-input-container(md-no-float="true")
-        input(type='password', name='password', ng-model='vm.user.password', placeholder='Password'
-          tabindex='{{vm.user.email ? "1" : "2"}}')
+      section(layout='row' flex)
+        md-input-container(md-no-float="true")
+          input(type='password', name='password', ng-model='vm.user.password', placeholder='Enter password'
+            tabindex='{{vm.user.email ? "1" : "2"}}')
 
 
-      md-button.login-button.md-raised.md-primary(type='submit', tabindex='3') Login
+        md-button.login-button.md-icon-button(type='submit', tabindex='3')
+          md-icon(ng-hide='vm.submiting' md-font-set="material-icons") send
+          md-progress-circular(ng-show='vm.submiting' md-mode="indeterminate" md-diameter='40')
 

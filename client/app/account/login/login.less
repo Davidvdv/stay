@@ -13,19 +13,32 @@
     align-items: center;
   }
 
+
+  input {
+    font-weight: 700;
+  }
+
   input.username-input {
-
+    
     background-color: @background;
-
     &.username-exists {
       border-color: transparent;
     }
+  }
 
-    &:focus,
-    &.is-focused {
-      outline: none;
+  md-input-container {
+    margin: 0;
+    flex-grow: 1;
+  }
 
-//      background-color: white;
+  .login-button {
+    md-icon {
+      margin-left: 2px;
+      margin-top: -1px;
+    }
+    md-progress-circular {
+      margin-top: -8px;
+      margin-left: -8px;
     }
   }
 

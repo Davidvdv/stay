@@ -30,7 +30,7 @@ router.post('/', function(req, res, next) {
   const requestCookie = request.defaults({jar: cookieJar});
   Promise.promisifyAll(requestCookie);
   Promise.promisifyAll(requestCookie.prototype);
-  
+
   const email = req.body.email;
 
   return getLoginScreen(requestCookie)
