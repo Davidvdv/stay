@@ -7,7 +7,7 @@ md-content.login-content(layout='column' layout-align='space-between center')
     section(layout='column' flex)
 
       md-input-container(md-no-float="true")
-        input.username-input(type='input', name='email', ng-model='vm.user.email', placeholder='Username'
+        input.username-input(type='input', name='email', ng-model='vm.user.email', placeholder='Username (eg ab1234)'
           tabindex='{{vm.user.email ? "-1" : "1"}}', ng-keypress='vm.error = false'
           ng-focus='vm.focus.email = true' ng-blur='vm.focus.email = false', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
 
