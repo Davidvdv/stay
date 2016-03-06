@@ -49,7 +49,27 @@ export function getTimesheets(req, res) {
 
   return _getTimesheets(req.user, req.params.timesheetPage)
     .then(timesheets => {
-      return res.json(timesheets);
+
+      //TODO if there are non in the future - go create one
+      if(timesheets[0].endDatePretty.indexOf('in') === -1){
+
+        let format = 'YYYY-M-D';
+        let date = moment.day('Sunday').format(format);
+        let today = moment().format(format);
+
+        let sundayDate = date === today ? moment().add(7, 'days').format(format) : date;
+
+        return _createTimesheetRaw(user, sundayDate)
+          .then(timesheetRaw => {
+            return _getTimesheets(req.user, req.params.timesheetPage)
+            .then(timesheets => {
+                return res.json(timesheets);
+              });
+          });
+      }
+      else {
+        return res.json(timesheets);
+      }
     })
     .catch(err => {
       console.error('Error getting timesheets', err);
