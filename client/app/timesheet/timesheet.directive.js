@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .directive('timesheet', function ($log, Timesheet, TimesheetDialog) {
+  .directive('timesheet', function ($log, Timesheet, TimesheetDialog, $timeout) {
     return {
       templateUrl: 'app/timesheet/timesheet.html',
       restrict: 'E',
@@ -22,7 +22,9 @@ angular.module('stayApp')
           scope.openTaskMoveDialog = openTaskMoveDialog;
           scope.deleteTask = deleteTask;
           scope.addRow = addRow;
-        }
+
+          $timeout(() => {scope.isLoaded = true;})
+        };
 
 
         function deleteTask($event, timesheet, taskIndex, clientName, projectName){

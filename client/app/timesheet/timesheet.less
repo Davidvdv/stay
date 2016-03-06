@@ -75,11 +75,6 @@ md-content.task {
 
   flex-wrap: wrap;
 
-  padding: 0 0 0 8px;
-
-  &.first-task {
-    padding-top: 14px;
-  }
 
   @media(min-width: @screen-md-min){
     flex-wrap: nowrap;
@@ -138,7 +133,7 @@ md-content.client {
 
     transition: margin 0.3s ease-in-out;
     .is-nav-open-desktop & {
-      margin: 26px 40px 26px 0;
+      margin: 26px 40px 26px 6px;
     }
 
     margin: 26px 40px 26px 40px;
@@ -161,16 +156,37 @@ md-content.bottom-actions {
 }
 
 md-content.project {
-  margin: 5px 0;
+  margin: 0 !important;
+  padding: 0 0 0 0 !important;
+
+  &.top-project {
+    margin-top: 5px;
+    padding-top: 8px;
+  }
+
+  &.bottom-project {
+    margin-bottom: 5px;
+    padding-bottom: 8px;
+  }
 
   h3 {
     color: @heading-grey;
   }
 }
 
-md-content.project,
-md-content.project md-content {
+md-content.client,
+md-content.client md-content {
   background-color: #fff;
+  padding: 8px 0;
+
+  md-content.task,
+  md-content.title,
+  md-content.bottom-actions {
+    padding: 8px 16px;
+    &.first-task {
+      padding-top: 14px;
+    }
+  }
 }
 
 md-content.timesheet-content {

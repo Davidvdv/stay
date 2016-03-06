@@ -4,7 +4,7 @@
 
 class MainController {
 
-  constructor($scope, $log, Timesheet, $state, $stateParams, $rootScope) {
+  constructor($scope, $log, Timesheet, $state, $stateParams, $rootScope, $timeout) {
 
     Timesheet.getProjects()
       .then(projects => {
@@ -37,8 +37,11 @@ class MainController {
           if (! $state.params.id || ! $state.params.id.trim()) {
             return $state.go('main.timesheet', {id: currentTimesheet.id}, {replace: true});
           }
-          else {
+          else if (currentTimesheet.id === $state.params.id) {
             this.currentTimesheet = currentTimesheet;
+            $timeout(() => {
+              this.loadingCurrentTimesheet = false;
+            });
           }
         });
     };
@@ -46,9 +49,16 @@ class MainController {
 
     $scope.$on('$destroy', $rootScope.$on('$stateChangeSuccess', () => {
       this.currentTimesheet = undefined;
-      getTimesheets();
+      $timeout(() => {
+        getTimesheets();
+        $timeout(()=> {
+          this.loadingCurrentTimesheet = true;
+        })
+      });
     }));
-    getTimesheets();
+    this.loadingCurrentTimesheet = true;
+    $timeout(getTimesheets);
+
 
     //$http.get('/api/things').then(response => {
     //  this.awesomeThings = response.data;

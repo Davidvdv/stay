@@ -7,16 +7,16 @@ div(layout='column')
 
   section(id='main-container' layout='row' flex)
 
-    md-progress-circular.timesheet-loader(ng-show='! main.currentTimesheet', md-diameter='120' md-mode="indeterminate")
+    md-progress-circular.timesheet-loader(ng-show='main.loadingCurrentTimesheet', md-diameter='120' md-mode="indeterminate")
 
     md-sidenav.md-sidenav-left(id="left-nav" md-component-id='left-nav',
     md-is-locked-open="$mdMedia('lt-md') || ($mdMedia('gt-sm') && main.isOpenDesktop)")
 
-      md-content.md-content-timesheet-navigation
+      md-content.md-content-timesheet-navigationt.fade-in-content(ng-class='{"fade-in": main.timesheets }')
         timesheet-navigation(timesheets='main.timesheets')
 
 
-    md-content(id='timesheet-container' ng-class='{"is-nav-open-desktop": main.isOpenDesktop}' flex)
+    md-content(id='timesheet-container' ng-class='{"is-nav-open-desktop": main.isOpenDesktop }' flex)
 
-      timesheet(timesheet='main.currentTimesheet')
+      timesheet(ng-if='main.currentTimesheet' timesheet='main.currentTimesheet')
 

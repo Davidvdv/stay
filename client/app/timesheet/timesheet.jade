@@ -1,15 +1,16 @@
 
 
 
-md-content.timesheet-content.fade-in-content(ng-class='{"fade-in": !!timesheet }')
+md-content.timesheet-content.fade-in-content(layout-padding, ng-class='{"fade-in": timesheet && isLoaded}')
 
-  md-content.client(layout-padding ng-repeat='(clientName, clientValue) in timesheet.rows track by $index')
+  md-content.client.md-whiteframe-z1(ng-repeat='(clientName, clientValue) in timesheet.rows track by $index')
 
     h1.show-collapsed-menu {{getClientNameDisplay(clientName)}}
 
-    md-content.project.md-whiteframe-z2(layout-padding ng-repeat='(projectName, projectValue) in clientValue track by $index')
+    md-content.project(ng-show='projectValue.length > 0' layout-padding ng-repeat='(projectName, projectValue) in clientValue track by $index',
+    ng-class='{"top-project": $first, "bottom-project": $last}')
 
-      md-content(flex layout='row')
+      md-content.title(flex layout='row')
         h3 {{getProjectNameDisplay(projectName)}}
 
         md-button.edit-project-button.md-icon-button(ng-click='openProjectMoveDialog($event)')
@@ -29,6 +30,7 @@ md-content.timesheet-content.fade-in-content(ng-class='{"fade-in": !!timesheet }
           md-tooltip(md-direction='left') Add
 
 
+      md-divider(ng-if="!$last")
 
 
 
