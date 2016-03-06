@@ -4,8 +4,7 @@
 
 class MainController {
 
-  constructor($scope, $log, Timesheet, $state, $stateParams) {
-
+  constructor($scope, $log, Timesheet, $state, $stateParams, $rootScope) {
 
     Timesheet.getProjects()
       .then(projects => {
@@ -14,34 +13,42 @@ class MainController {
       });
 
 
-    Timesheet.getTimesheets()
-      .then(timesheets => {
+    const getTimesheets = () => {
+      return Timesheet.getTimesheets()
+        .then(timesheets => {
 
-        $log.debug('timesheets', timesheets);
-        this.timesheets = timesheets;
+          $log.debug($state);
+          $log.debug('timesheets', $state.params.id, timesheets);
 
-        if($stateParams.id){
-          return Timesheet.getTimesheet($stateParams.id);
-        }
-        else {
-          return Timesheet.getFirstTimesheet(timesheets);
-        }
+          this.timesheets = timesheets;
 
-      })
-      .then(currentTimesheet => {
+          if ($state.params.id) {
+            return Timesheet.getTimesheet($state.params.id);
+          }
+          else {
+            return Timesheet.getFirstTimesheet(timesheets);
+          }
 
-        $log.debug('currentTimesheet', currentTimesheet);
+        })
+        .then(currentTimesheet => {
 
-        if(! $stateParams.id.trim() ){
-          return $state.go('main', {id: currentTimesheet.id}, {replace:true});
-        }
-        else {
-          this.currentTimesheet = currentTimesheet;
-        }
-      });
+          $log.debug('currentTimesheet', $state.params, currentTimesheet);
+
+          if (! $state.params.id || ! $state.params.id.trim()) {
+            return $state.go('main.timesheet', {id: currentTimesheet.id}, {replace: true});
+          }
+          else {
+            this.currentTimesheet = currentTimesheet;
+          }
+        });
+    };
 
 
-
+    $scope.$on('$destroy', $rootScope.$on('$stateChangeSuccess', () => {
+      this.currentTimesheet = undefined;
+      getTimesheets();
+    }));
+    getTimesheets();
 
     //$http.get('/api/things').then(response => {
     //  this.awesomeThings = response.data;
@@ -51,11 +58,10 @@ class MainController {
     //$scope.$on('$destroy', function() {
     //  socket.unsyncUpdates('thing');
     //});
-  }
 
-  getTimesheets() {
 
   }
+
 
   //addThing() {
   //  if (this.newThing) {

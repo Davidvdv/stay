@@ -2,7 +2,6 @@
 
 angular.module('stayApp', [
   'stayApp.auth',
-  'stayApp.admin',
   'stayApp.constants',
   'ngCookies',
   'ngResource',
@@ -14,7 +13,7 @@ angular.module('stayApp', [
 ])
   .config(function($urlRouterProvider, $locationProvider) {
 
-    $urlRouterProvider.otherwise('/');
+    $urlRouterProvider.otherwise('/timesheet/');
 
     $locationProvider.html5Mode(true);
   });

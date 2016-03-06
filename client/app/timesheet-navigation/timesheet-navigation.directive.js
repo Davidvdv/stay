@@ -25,7 +25,7 @@ angular.module('stayApp')
 
         function gotoTimesheet(timesheet){
           $log.debug('gotoTimesheet', timesheet);
-          $state.go('main', {id: timesheet.id});
+          $state.go('main.timesheet', { id: timesheet.id });
         }
 
         function getTimesheetLabel(timesheet){
