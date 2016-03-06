@@ -8,16 +8,19 @@ md-content.login-content(layout='column' layout-align='space-between center')
 
       md-input-container(md-no-float="true")
         input.username-input(type='input', name='email', ng-model='vm.user.email', placeholder='Username'
-          tabindex='{{vm.user.email ? "-1" : "1"}}'
+          tabindex='{{vm.user.email ? "-1" : "1"}}', ng-keypress='vm.error = false'
           ng-focus='vm.focus.email = true' ng-blur='vm.focus.email = false', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
 
       section(layout='row' flex)
         md-input-container(md-no-float="true")
-          input(type='password', name='password', ng-model='vm.user.password', placeholder='Enter password'
+          input(type='password', name='password', ng-keypress='vm.error = false' ng-model='vm.user.password', placeholder='Enter password'
             tabindex='{{vm.user.email ? "1" : "2"}}')
 
 
         md-button.login-button.md-icon-button(type='submit', tabindex='3')
           md-icon(ng-hide='vm.submiting' md-font-set="material-icons") send
           md-progress-circular(ng-show='vm.submiting' md-mode="indeterminate" md-diameter='40')
+
+      md-content.error-content.fade-in-content(ng-class='{"fade-in": vm.error}')
+        | Cannot find a user matching that username and password.
 

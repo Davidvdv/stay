@@ -41,6 +41,8 @@ router.post('/', function(req, res, next) {
         return cookie && cookie.key === 'iPlanetDirectoryPro';
       }).first();
 
+      if( ! ssoCookie ){ return res.sendStatus(401); }
+
       return User.findOneAsync({email: email})
         .then(function(user){
 

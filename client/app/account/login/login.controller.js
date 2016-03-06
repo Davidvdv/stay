@@ -22,7 +22,7 @@ class LoginController {
 
     if (form.$valid) {
       this.Auth.login({
-        email: this.user.email,
+        email: this.user.email.trim(),
         password: this.user.password
       })
       .then(() => {
@@ -34,7 +34,9 @@ class LoginController {
         }, 100);
       })
       .catch(err => {
-        this.errors.other = err.message;
+
+        this.error = true;
+
         this.$timeout(() => {
           this.submiting = false;
         }, 0);
