@@ -7,11 +7,11 @@ md-content.login-content(layout='column' layout-align='space-between center')
     section(layout='column' flex)
 
       md-input-container.username-input(md-no-float="true")
-        input(type='input', name='email', ng-model='vm.user.email', placeholder='Username (eg ab1234)'
+        input(id='username-input' type='input', name='email', ng-model='vm.user.email', placeholder='Username (eg ab1234)'
           tabindex='{{vm.user.email ? "5" : "1"}}', ng-keypress='vm.error = false'
-          ng-focus='vm.focus.email = true' ng-blur='vm.focus.email = false', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
+          ng-focus='vm.focus.email = true' ng-blur='vm.onUsernameBlur()', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
 
-        md-button.md-icon-button.clear-user-button(tabindex='-1' ng-click='vm.user.email = ""')
+        md-button.md-icon-button.clear-user-button(tabindex='-1' ng-click='vm.clearUsername($event)')
           md-icon(md-font-set="material-icons") clear
 
       section(layout='row' flex)

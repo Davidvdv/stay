@@ -7,13 +7,32 @@ class LoginController {
   submitted = false;
   //end-non-standard
 
-  constructor(Auth, $state, $localStorage, $timeout) {
+  constructor(Auth, $state, $localStorage, $timeout, $log) {
+    this.$log = $log;
     this.Auth = Auth;
     this.$state = $state;
     this.$localStorage = $localStorage;
     this.$timeout = $timeout;
 
     this.user.email = this.$localStorage.email || '';
+  }
+
+  onUsernameBlur($event) {
+    this.$log.debug($event);
+    this.$log.debug($event);
+    this.$log.debug($event);
+    this.$log.debug($event);
+    this.focus = this.focus || {};
+    this.focus.email = false;
+
+    if(!this.user.email){
+      this.user.email = this.$localStorage.email || '';
+    }
+  }
+
+  clearUsername(){
+    this.user.email = '';
+    angular.element(document.getElementById('username-input')).focus();
   }
 
   login(form) {
