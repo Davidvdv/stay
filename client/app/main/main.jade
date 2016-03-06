@@ -5,18 +5,18 @@ div(layout='column')
   section(layout='row' flex)
     navbar(navbar-desktop-toggle='main.isOpenDesktop')
 
-  section(layout='row' flex)
+  section(id='main-container' layout='row' flex)
 
     md-progress-circular.timesheet-loader(ng-show='! main.currentTimesheet', md-diameter='120' md-mode="indeterminate")
 
     md-sidenav.md-sidenav-left(id="left-nav" md-component-id='left-nav',
     md-is-locked-open="$mdMedia('lt-md') || ($mdMedia('gt-sm') && main.isOpenDesktop)")
 
-      md-content
+      md-content.md-content-timesheet-navigation
         timesheet-navigation(timesheets='main.timesheets')
 
 
-    md-content(flex)
+    md-content(id='timesheet-container' ng-class='{"is-nav-open-desktop": main.isOpenDesktop}' flex)
 
       timesheet(timesheet='main.currentTimesheet')
 

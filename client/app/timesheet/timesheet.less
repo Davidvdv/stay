@@ -135,7 +135,14 @@ md-content.client {
     margin: 6px 0 0 0;
   }
   @media(min-width: @screen-md-min){
-    margin: 26px 40px 26px 0;
+
+    transition: margin 0.3s ease-in-out;
+    .is-nav-open-desktop & {
+      margin: 26px 40px 26px 0;
+    }
+
+    margin: 26px 40px 26px 40px;
+
 
     h1 {
       position: absolute;
