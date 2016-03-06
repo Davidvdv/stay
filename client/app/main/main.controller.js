@@ -24,7 +24,7 @@ class MainController {
       let timesheetPromise = [
         Timesheet.getTimesheets()
       ];
-      if($state.params.id){
+      if($state.params && $state.params.id){
         timesheetPromise.push(Timesheet.getTimesheet($state.params.id));
       }
 
@@ -70,7 +70,7 @@ class MainController {
               }).first();
               $log.debug('Preloading next timesheet', index);
 
-              return Timesheet.getTimesheet(timesheets && timesheets[index].id);
+              return Timesheet.getTimesheet(timesheets && timesheets[index] && timesheets[index].id);
             }
             catch(err){$log.error(err);}
 
