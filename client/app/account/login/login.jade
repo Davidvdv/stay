@@ -19,7 +19,6 @@ md-content.login-content(layout='column' layout-align='space-between center')
           input(id='password-input' type='password', name='password', ng-keypress='vm.error = false' ng-model='vm.user.password', placeholder='Enter password', ng-required='true'
             tabindex='{{::vm.user.email ? "1" : "2"}}')
 
-
         md-button.login-button.md-icon-button(type='submit', tabindex='3')
           md-icon(ng-hide='vm.submiting' md-font-set="material-icons") send
           md-progress-circular(ng-show='vm.submiting' md-mode="indeterminate" md-diameter='40')

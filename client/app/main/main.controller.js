@@ -14,7 +14,6 @@ class MainController {
 
     // Refreshed cached content
     Timesheet.getTimesheets({force: true});
-    Timesheet.getProjects({force: true});
 
 
     const getTimesheets = () => {

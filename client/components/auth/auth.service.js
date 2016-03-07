@@ -45,9 +45,7 @@ function AuthService($location, $http, $cookies, $q, $state, appConfig, Util, Us
      * Delete access token and user info
      */
     logout() {
-
       Timesheet.clearTimesheetsCache();
-      Timesheet.clearProjectsCache();
 
       $cookies.remove('token');
       currentUser = {};
