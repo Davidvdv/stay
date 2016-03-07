@@ -14,23 +14,23 @@ md-input-container.stretch-input.task-input(md-no-float="true")
 
 md-input-container.task-day-input(md-no-float="true")
   label(ng-if='$first') M
-  input(type='number' tabindex="1" min='0' max='99' ng-init="task.mon=task.mon||0" ng-model='task.mon')
+  input(type='number' tabindex="1" aria-label='Monday hours' min='0' max='99' ng-init="task.mon=task.mon||0" ng-model='task.mon')
 
 md-input-container.task-day-input(md-no-float="true")
   label(ng-if='$first') T
-  input(type='number' tabindex="1" min='0' max='99' ng-init="task.tue=task.tue||0" ng-model='task.tue')
+  input(type='number' tabindex="1" aria-label='Tuesday hours' min='0' max='99' ng-init="task.tue=task.tue||0" ng-model='task.tue')
 
 md-input-container.task-day-input(md-no-float="true")
   label(ng-if='$first') W
-  input(type='number' tabindex="1" min='0' max='99' ng-init="task.wed=task.wed||0" ng-model='task.wed')
+  input(type='number' tabindex="1" aria-label='Wednesday hours' min='0' max='99' ng-init="task.wed=task.wed||0" ng-model='task.wed')
 
 md-input-container.task-day-input(md-no-float="true")
   label(ng-if='$first') T
-  input(type='number' tabindex="1" min='0' max='99' ng-init="task.thu=task.thu||0" ng-model='task.thu')
+  input(type='number' tabindex="1" aria-label='Thursday hours' min='0' max='99' ng-init="task.thu=task.thu||0" ng-model='task.thu')
 
 md-input-container.task-day-input(md-no-float="true")
   label(ng-if='$first') F
-  input(type='number' tabindex="1" min='0' max='99' ng-init="task.fri=task.fri||0" ng-model='task.fri')
+  input(type='number' tabindex="1" aria-label='Friday hours' min='0' max='99' ng-init="task.fri=task.fri||0" ng-model='task.fri')
 
 md-input-container.task-total-input.bold-input(md-no-float="true")
   label(ng-if='$first') Total
