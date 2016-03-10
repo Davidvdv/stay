@@ -15,10 +15,12 @@ angular.module('stayApp')
         var colorSeed = attrs.randomColor;
 
         var randomColorOptions = {
-          seed: colorSeed || ''
+          seed: colorSeed || '',
+          luminosity: 'light'
         };
 
         $timeout(() => {
+          element.css(`color`, `${randomColor(randomColorOptions)}`);
           element.css(`background-color`, `${randomColor(randomColorOptions)}`);
         });
       }

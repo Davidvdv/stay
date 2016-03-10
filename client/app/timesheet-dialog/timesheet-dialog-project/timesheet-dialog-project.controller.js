@@ -21,7 +21,7 @@ angular.module('stayApp')
       $scope.searchProjectsText = '';
       $scope.searchClientsText = '';
       Projects.getCommon().then((commonProjects = []) => {
-        $scope.commonProjects = _.take(commonProjects, 6);
+        $scope.commonProjects = _.take(commonProjects, 9);
       });
 
     }

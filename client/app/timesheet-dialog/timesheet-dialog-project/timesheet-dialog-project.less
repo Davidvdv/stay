@@ -5,6 +5,8 @@
 
 .timesheet-dialog-project {
 
+  padding: 30px;
+
   md-autocomplete {
     width: 100%;
     @media(min-width: @screen-md-min){
@@ -19,11 +21,28 @@
     margin: 10px;
   }
 
-  .common-project-button {
-    span {
-      text-transform: none;
-    }
+  .common-project-content {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
+  .common-project-button {
+    flex-grow: 1;
+    padding: 8px 20px;
+    text-align: left;
+
+
+    em {
+      opacity: 0.8;
+    }
+
+    h4, em {
+      color: @heading-grey;
+      margin: 0;
+      line-height: initial;
+      text-transform: none;
+    }
+
+  }
 
 }
