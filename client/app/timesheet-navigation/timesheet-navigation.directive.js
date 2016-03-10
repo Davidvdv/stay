@@ -16,7 +16,8 @@ angular.module('stayApp')
         function init(){
           scope.isTimesheetActive = isTimesheetActive;
           scope.gotoTimesheet = gotoTimesheet;
-          scope.getTimesheetLabel = getTimesheetLabel;
+          scope.getTimesheetDate = getTimesheetDate;
+          scope.getTimesheetTimeframe = getTimesheetTimeframe;
         }
 
         function isTimesheetActive(timesheet){
@@ -28,8 +29,12 @@ angular.module('stayApp')
           $state.go('main.timesheet', { id: timesheet.id });
         }
 
-        function getTimesheetLabel(timesheet){
-          return moment(timesheet.endDate).format('DD/MM/YYYY') + ' : '+ timesheet.endDatePretty;
+        function getTimesheetDate(timesheet){
+          return moment(timesheet.endDate).format('DD/MM/YYYY');
+        }
+
+        function getTimesheetTimeframe(timesheet){
+          return 'Due '+ moment(timesheet.endDate).fromNow();
         }
       }
     };

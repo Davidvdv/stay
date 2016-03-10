@@ -1,8 +1,12 @@
 md-content.timesheet-navigation-content
 
   md-list
-    md-list-item(tabindex="10" ng-click='gotoTimesheet(timesheet)' ng-repeat='timesheet in timesheets track by $index',
-    ng-class='{"is-active": isTimesheetActive(timesheet)}')
-      | {{getTimesheetLabel(timesheet)}}
+    md-list-item.navigation-item(tabindex="10" ng-click='gotoTimesheet(timesheet)' ng-repeat='timesheet in timesheets track by $index',
+                  ng-class='{"is-active": isTimesheetActive(timesheet)}')
+
+      div(layout='column')
+        h4() {{getTimesheetDate(timesheet)}}
+        h5(ng-if='timesheet.status !== "Approved"')
+         em {{getTimesheetTimeframe(timesheet)}}
 
       md-icon.timesheet-approved-tick(ng-show='timesheet.status === "Approved"', md-font-set="material-icons") done

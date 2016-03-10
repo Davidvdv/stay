@@ -35,8 +35,9 @@ requestDebug(request, function(type, data, r) {
     console.log(`YATS REQUEST ${r.path}`);
     //moo('requestInstance', r);
   }
-  //&& r.path === '/timesheets/create'
 });
+
+
 
 
 
@@ -52,23 +53,29 @@ export function getTimesheets(req, res) {
   return _getTimesheets(req.user, req.params.timesheetPage)
     .then((timesheets = []) => {
 
-      console.log('Check to see if we should create a new timesheet for the current week', timesheets[0] && timesheets[0].endDatePretty, timesheets[0] && timesheets[0].endDatePretty && timesheets[0].endDatePretty.indexOf('in') === -1);
+      console.log('Check to see if we should create a new timesheet for the current week', timesheets.timesheets[0] && timesheets.timesheets[0].endDatePretty, timesheets.timesheets[0] && timesheets.timesheets[0].endDatePretty && timesheets.timesheets[0].endDatePretty.indexOf('in') === -1);
 
-      if(timesheets[0] && timesheets[0].endDatePretty.indexOf('in') === -1){
+      if(timesheets.timesheets[0] && timesheets.timesheets[0].endDatePretty.indexOf('in') === -1){
 
         let format = 'YYYY-M-D';
-        let date = moment.day('Sunday').format(format);
-        let today = moment().format(format);
+        let date = moment().day('Sunday');
+        let today = moment();
 
-        let sundayDate = date === today ? moment().add(7, 'days').format(format) : date;
+        let sundayDate = (date.format(format) === today.format(format) || date.isBefore(today)) ? date.add(7, 'days') : date;
 
 
-        console.log(`date:${date}, today:${today}, sundayDate:${sundayDate}`);
+        console.log(`date:${date.format(format)}, today:${today.format(format)}, sundayDate:${sundayDate.format(format)}`);
 
-        return _createTimesheetRaw(user, sundayDate)
+        return _createTimesheetRaw(req.user, sundayDate.format(format))
           .then(timesheetRaw => {
             return _getTimesheets(req.user, req.params.timesheetPage)
-            .then(timesheets => {
+              .then(timesheets => {
+                return res.json(timesheets);
+              });
+          })
+          .catch(err => {
+            return _getTimesheets(req.user, req.params.timesheetPage)
+              .then(timesheets => {
                 return res.json(timesheets);
               });
           });
@@ -298,9 +305,11 @@ function _createTimesheetRaw(user, date){
     .then(([response, body]) => {
 
       if(body.indexOf('error prohibited this timesheet from being saved') > 0){
-        throw new Error('Error trying to create');
+        console.log('Error trying to create timesheet' + date);
+        throw new Error('Error trying to create timesheet' + date);
       }
       else if(body.indexOf('A timesheet already exists for this week') > 0){
+        console.log('Timesheet already exists for this week', date);
         throw new Error('Timesheet already exists');
       }
 

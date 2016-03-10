@@ -35,7 +35,9 @@ angular.module('stayApp')
     };
 
     this.getFirstTimesheet = (timesheets) => {
-      return this.getTimesheet(timesheets[0].id);
+      let lastNonApprovedTimesheet = _(timesheets).filter(timesheet => { return timesheet.status !== 'Approved';}).last();
+
+      return this.getTimesheet(lastNonApprovedTimesheet.id);
     };
 
     this.getTimesheet = (id) => {
