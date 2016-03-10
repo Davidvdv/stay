@@ -39,8 +39,13 @@ angular.module('stayApp')
       return $scope.searchProjects(clientItem, '');
     }
 
-    function complete($event, clientItem, projectItem){
-      return $mdDialog.hide({clientItem, projectItem});
+    function complete($event, clientItem = {}, projectItem = {}){
+      if( ! clientItem.name || ! projectItem.name){
+        return;
+      }
+      else {
+        return $mdDialog.hide({clientItem, projectItem});
+      }
     }
 
 
