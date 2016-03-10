@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia, Auth) => ({
+  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia, Auth, $timeout) => ({
     templateUrl: 'components/navbar/navbar.html',
     restrict: 'E',
     replace: true,
@@ -16,7 +16,7 @@ angular.module('stayApp')
         scope.logout = Auth.logout;
         scope.toggleSideNav = buildToggler(appConfig.sideNavId);
         scope.navbarDesktopToggle = scope.navbarDesktopToggle === undefined;
-
+        scope.isToggleFinished = true;
       }
 
 
@@ -24,6 +24,8 @@ angular.module('stayApp')
         return () => {
 
           if($mdMedia('gt-sm')){
+            scope.isToggleFinished = false;
+            $timeout(() => {scope.isToggleFinished = true;}, 500);
             scope.navbarDesktopToggle = ! scope.navbarDesktopToggle;
           }
           else {

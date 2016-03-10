@@ -23,6 +23,7 @@ angular.module('stayApp')
           scope.deleteTask = deleteTask;
           scope.addRow = addRow;
           scope.getTaskTotal = getTaskTotal;
+          scope.svElementOpts = { containment: '#timesheet-content' };
 
           scope.setupTotalWatcher = setupTotalTaskWatcher;
 

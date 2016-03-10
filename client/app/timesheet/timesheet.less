@@ -2,7 +2,7 @@
 
 .bold-input {
   input {
-    font-weight: 700;
+    font-weight: 500;
   }
 }
 
@@ -90,6 +90,7 @@ md-content.task {
       display: none;
     }
     input {
+      color: @input-color;
       padding-left: 0;
       padding-right: 0;
       .description-input & {
@@ -148,10 +149,17 @@ md-content.client {
       margin-top: 20px;
     }
   }
+
+  md-content.title {
+    background-color: @title-background;
+    margin-bottom: 20px;
+  }
+
 }
 
 
 md-content.bottom-actions {
+  padding-top: 0 !important;
   button.md-button{
     align-self: flex-end;
   }
@@ -173,6 +181,8 @@ md-content.project {
 
   h3 {
     color: @heading-grey;
+    margin: 0;
+    margin-top: 6px;
   }
 
 }

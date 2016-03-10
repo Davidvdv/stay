@@ -1,28 +1,38 @@
 
 
 
-md-content.timesheet-content.fade-in-content(layout-padding, ng-class='{"fade-in": timesheet && isLoaded}')
+md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-padding, ng-class='{"fade-in": timesheet && isLoaded}')
+
+
 
   md-content.client.md-whiteframe-z1(ng-repeat='(clientName, clientValue) in timesheet.rows track by $index')
 
-    h1.show-collapsed-menu {{getClientNameDisplay(clientName)}}
+
 
     md-content.project(ng-show='projectValue.length > 0' layout-padding ng-repeat='(projectName, projectValue) in clientValue track by $index',
     ng-class='{"top-project": $first, "bottom-project": $last}')
 
+
+
       md-content.title(flex layout='row')
-        h3 {{getProjectNameDisplay(projectName)}}
 
-        md-button.edit-project-button.md-icon-button(ng-click='openProjectMoveDialog($event)')
-          md-icon(md-font-set="material-icons") edit
-          md-tooltip(md-direction='right') Edit
+        div(flex layout='column')
+          h1.show-collapsed-menu {{getClientNameDisplay(clientName)}}
 
-      h1.hide-collapsed-menu(ng-show='$first && isKnownProject(projectName)') {{getClientNameDisplay(clientName)}}
+          h3 {{getProjectNameDisplay(projectName)}}
+            md-button.edit-project-button.md-icon-button(ng-click='openProjectMoveDialog($event)')
+              md-icon(md-font-set="material-icons") edit
+              md-tooltip(md-direction='right') Edit
 
 
-      md-content.task(ng-class='{"first-task": $first}' flex layout='row' ng-repeat='task in projectValue track by $index')
 
-        include ./timesheet-task.jade
+      h1.hide-collapsed-menu(ng-show='isKnownProject(projectName)') {{getClientNameDisplay(clientName)}}
+
+
+      div.no-padding(sv-root sv-part="projectValue")
+        md-content.task(ng-class='{"first-task": $first}' sv-element='svElementOpts' flex layout='row' ng-repeat='task in projectValue track by $index')
+
+          include ./timesheet-task.jade
 
       md-content.bottom-actions(flex layout='column')
         md-button.md-icon-button(ng-if='isKnownProject(projectName)', tabindex="1", ng-click='addRow(clientName, projectName)')
@@ -30,7 +40,7 @@ md-content.timesheet-content.fade-in-content(layout-padding, ng-class='{"fade-in
           md-tooltip(md-direction='left') Add
 
 
-      md-divider(ng-if="!$last")
+
 
 
 

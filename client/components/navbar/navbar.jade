@@ -1,11 +1,29 @@
 
 
-md-toolbar.md-whiteframe-z3()
-  div.md-toolbar-tools(flex layout-align='space-between center')
-    md-button.md-icon-button.menu-button(tabindex="15" ng-click='toggleSideNav()' aria-label="Menu")
-      md-icon(md-font-set="material-icons") menu
 
-    md-button.md-icon-button.logout-button(tabindex="15" ng-click='logout()' aria-label="Logout")
-      md-icon(md-font-set="material-icons") power_settings_new
-      md-tooltip.md-warn(md-direction='left') Logout
+md-toolbar.navbar.md-whiteframe-z3()
+  div.md-toolbar-tools(flex layout-align='space-between center')
+
+    md-menu(md-position-mode="")
+      md-button.md-icon-button(tabindex="1" aria-label='Timesheet menu', ng-click='$mdOpenMenu($event)',)
+        md-icon(md-font-set="material-icons") menu
+      md-menu-content(width='3')
+        md-menu-item(ng-show='! navbarDesktopToggle && isToggleFinished')
+          md-button(ng-click='toggleSideNav()' aria-label="Show timesheets")
+            md-icon(md-font-set="material-icons") visibility
+            | Show timesheets
+        md-menu-item(ng-show='navbarDesktopToggle && isToggleFinished')
+          md-button(ng-click='toggleSideNav()' aria-label="Hide timesheets")
+            md-icon(md-font-set="material-icons") visibility_off
+            | Hide timesheets
+        md-menu-item
+          md-button(ng-click='logout()' aria-label="Logout")
+            md-icon(md-font-set="material-icons") power_settings_new
+            | Logout
+
+
+    md-button.md-icon-button.logout-button(tabindex="15" ng-click='add()' aria-label="Add")
+      md-icon(md-font-set="material-icons") add
+      md-tooltip.md-warn(md-direction='left') Add
+
 

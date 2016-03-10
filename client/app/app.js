@@ -6,6 +6,7 @@ angular.module('stayApp', [
   'ngCookies',
   'ngResource',
   'ngStorage',
+  'angular-sortable-view',
   'ngSanitize',
   'ngMaterial',
   'btford.socket-io',
