@@ -36,7 +36,9 @@ md-dialog.dialog.timesheet-dialog-project
     md-content(flex)
 
       h3 or select a common project
-      md-button.md-raised(ng-repeat='commonProject in commonProjects track by $index', ng-click='selectCommon($event, commonProject)')
+      md-button.md-raised.common-project-button(ng-repeat='commonProject in commonProjects track by $index',
+      ng-click='selectCommon($event, commonProject)'
+      random-color='{{commonProject.clientName}}')
         | {{commonProject.clientName}} {{commonProject.projectName}}
 
 

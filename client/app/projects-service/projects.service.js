@@ -49,7 +49,7 @@ angular.module('stayApp')
     };
 
 
-    this.searchClients = (query) => {
+    this.searchClients = (query = '') => {
       return this.getProjects()
         .then(projects => {
           return _(projects.clients).filter(client => {
@@ -60,6 +60,7 @@ angular.module('stayApp')
 
 
     this.searchProjects = (client, query = '') => {
+
       if( ! client ){
         $log.warn('No client passed to search Projects');
         return $q.reject();

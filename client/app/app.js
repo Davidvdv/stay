@@ -20,7 +20,7 @@ angular.module('stayApp', [
     $locationProvider.html5Mode(true);
 
     $mdThemingProvider.definePalette('amazingPaletteName', {
-      '50': '0E589E',
+      '50': 'FFFFFF',
       '100': '0E589E',
       '200': '0E589E',
       '300': '0E589E',

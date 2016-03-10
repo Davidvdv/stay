@@ -35,39 +35,38 @@ angular.module('stayApp')
       return this.getTimesheet(lastNonApprovedTimesheet.id);
     };
 
-    this.getTimesheet = (id) => {
+
+    this.getTimesheet = (id, {force} = {}) => {
 
       var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
 
       //TODO we should force this sometimes? mark them on getTimesheets() force
 
-      return timesheet.rows ? $q.when(timesheet) : $http.get(`/api/timesheets/${id}`)
+
+
+      return ( timesheet.rows && ! force ? $q.when(timesheet) : $http.get(`/api/timesheets/${id}`) )
         .then(response => {
 
-          //TODO should merge into timesheets if possible
-          //TODO clean up
-          //if the timesheet is still not there then wait for this.getTimesheets
           var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
-          if(!timesheet || !timesheet.row){
+          if( ! timesheet || ! timesheet.row){
             return this.getTimesheets()
             .then(timesheets => {
                 var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
-                return _.merge(timesheet, response.data);
+                return _.merge(timesheet, (response.data || {}));
               });
           }
           else {
-            return _.merge(timesheet, response.data);
+            return _.merge(timesheet, (response.data || {}));
           }
 
         })
         .then(timesheet => {
+
           // Preload projects
           _.forEach(timesheet.rows, (projects, clientName) => {
-
             _.forEach(projects, (project, projectName) => {
               return Projects.addCommon(clientName, projectName);
             });
-
             return Projects.getClientByName(clientName)
               .then(client => {
                 return Projects.searchProjects(client, '')
@@ -75,11 +74,23 @@ angular.module('stayApp')
                     $log.debug('clientName projects', projects);
                   });
               });
-
           });
+
+          // Force cache refresh
+          if( ! force ){
+            //Refresh it
+            $log.debug('Forcing refreshing timesheet', id);
+            //TODO if the timesheet has been edited or is still saving then we dont want to do this
+            //Hash the original fetch to see if it is the same -> if it is different then we want to take their yats
+            // as the master
+            this.getTimesheet(id, { force: true });
+          }
+
           return timesheet;
+
         }).catch(err => {
           $log.error(err);
+          return {};
         });
     };
 

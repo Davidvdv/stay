@@ -5,9 +5,7 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
 
 
 
-  md-content.client.md-whiteframe-z1(ng-repeat='(clientName, clientValue) in timesheet.rows track by $index')
-
-
+  md-content.client(ng-repeat='(clientName, clientValue) in timesheet.rows track by $index')
 
     md-content.project(ng-show='projectValue.length > 0' layout-padding ng-repeat='(projectName, projectValue) in clientValue track by $index',
     ng-class='{"top-project": $first, "bottom-project": $last}')

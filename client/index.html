@@ -22,6 +22,12 @@
       <!-- endinjector -->
     <!-- endbuild -->
 
+    <link href='https://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
+    <style>
+      html, body {
+        font-family: 'Oxygen', sans-serif !important;
+      }
+    </style>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
   <body ng-app="stayApp" tabindex="-1" disabled="true">
@@ -71,18 +77,17 @@
       <!-- injector:js -->
       <script src="components/auth/auth.module.js"></script>
       <script src="components/util/util.module.js"></script>
-      <script src="app/timesheet/timesheet.directive.js"></script>
+      <script src="app/account/settings/settings.controller.js"></script>
       <script src="app/app.constant.js"></script>
       <script src="app/main/main.controller.js"></script>
       <script src="app/main/main.js"></script>
       <script src="app/projects-service/projects.service.js"></script>
-      <script src="app/projects-service/timesheet.service.js"></script>
       <script src="app/timesheet-dialog/timesheet-dialog-project/timesheet-dialog-project.controller.js"></script>
       <script src="app/timesheet-dialog/timesheet-dialog.service.js"></script>
       <script src="app/timesheet-navigation/timesheet-navigation.directive.js"></script>
       <script src="app/timesheet-service/timesheet.service.js"></script>
+      <script src="app/timesheet/timesheet.directive.js"></script>
       <script src="app/account/login/login.controller.js"></script>
-      <script src="app/account/account.js"></script>
       <script src="components/auth/auth.service.js"></script>
       <script src="components/auth/interceptor.service.js"></script>
       <script src="components/auth/router.decorator.js"></script>
@@ -90,8 +95,10 @@
       <script src="components/footer/footer.directive.js"></script>
       <script src="components/mongoose-error/mongoose-error.directive.js"></script>
       <script src="components/navbar/navbar.directive.js"></script>
+      <script src="components/random-color/_randomColor.js"></script>
+      <script src="components/random-color/random-color.directive.js"></script>
       <script src="components/socket/socket.service.js"></script>
-      <script src="app/account/settings/settings.controller.js"></script>
+      <script src="app/account/account.js"></script>
       <script src="components/util/util.service.js"></script>
       <!-- endinjector -->
     <!-- endbuild -->

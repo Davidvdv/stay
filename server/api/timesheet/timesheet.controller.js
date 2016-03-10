@@ -16,6 +16,8 @@ import Promise from 'bluebird';
 import cheerio from 'cheerio';
 import moment from 'moment';
 import requestDebug from 'request-debug';
+import md5 from 'md5';
+import stringify from 'json-stringify-safe';
 
 
 
@@ -109,8 +111,8 @@ function _getRawTimesheetsResponse(user, timesheetPage = 1){
 export function getTimesheet(req, res) {
   console.log('getting timesheet', req.params.id);
 
-  if(! req.user.ssoCookieKey){ return res.sendStatus(401); }
-  if(! req.params.id){ return res.sendStatus(400); }
+  if( ! req.user.ssoCookieKey){ return res.sendStatus(401); }
+  if( ! req.params.id){ return res.sendStatus(400); }
 
   return _getTimesheet(req.user, req.params.id)
     .then(timesheet => {
@@ -133,13 +135,13 @@ function _getTimesheet(user, id){
   .then(([[viewResponse, viewBody], [editResponse, editBody]]) => {
 
       console.log('Successfully got timesheet', viewResponse.statusCode);
+
       if(editResponse.req.path === '/'){
         return formatTimesheet(parseTimesheetFromViewResponse(viewBody));
       }
       else {
         return formatTimesheet(parseTimesheetFromEditResponse(editBody));
       }
-
     });
 }
 
@@ -319,6 +321,8 @@ function _createTimesheetRaw(user, date){
 
 
 function formatTimesheet(rawTimesheet){
+
+  rawTimesheet.hash = md5(stringify(rawTimesheet));
 
   return _(rawTimesheet.rows).reduce((result, row) => {
 
