@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .controller('TimesheetDialogProjectCtrl', function ($scope, $log, $mdDialog, Timesheet) {
+  .controller('TimesheetDialogProjectCtrl', function ($scope, $log, $mdDialog, Timesheet, Projects) {
 
     return init();
 
@@ -13,11 +13,21 @@ angular.module('stayApp')
       $scope.complete = complete;
       $scope.selectedClientItemChange = selectedClientItemChange;
       $scope.closeDialog = closeDialog;
-      $scope.searchProjects = Timesheet.searchProjects;
-      $scope.searchClients = Timesheet.searchClients;
+      $scope.searchProjects = Projects.searchProjects;
+      $scope.searchClients = Projects.searchClients;
+      $scope.selectCommon = selectCommon;
+
+
       $scope.searchProjectsText = '';
       $scope.searchClientsText = '';
+      Projects.getCommon().then((commonProjects = []) => {
+        $scope.commonProjects = _.take(commonProjects, 6);
+      });
 
+    }
+
+    function selectCommon($event, commonProject){
+      return complete($event, {name: commonProject.clientName}, {name: commonProject.projectName});
     }
 
     function closeDialog(){

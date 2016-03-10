@@ -29,7 +29,9 @@ md-dialog.dialog.timesheet-dialog-project
 
 
 
-    div TODO - add commonly selected clients/projects by the user
+    md-content(flex)
+      md-button.md-raised(ng-repeat='commonProject in commonProjects track by $index', ng-click='selectCommon($event, commonProject)')
+        | {{commonProject.clientName}} {{commonProject.projectName}}
 
 
 
