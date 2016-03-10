@@ -10,7 +10,11 @@ md-sidenav {
   overflow-x: hidden;
 
   max-width: @sidenav-width;
+  width: @sidenav-width;
+  min-width: @sidenav-width;
   & > md-content {
+    max-width: @sidenav-width;
+    width: @sidenav-width;
     min-width: @sidenav-width;
     align-self: center;
   }

@@ -36,13 +36,14 @@ class LoginController {
     this.focus = this.focus || {};
     this.focus.email = false;
 
-    if(!this.user.email){
+    if( ! this.user.email){
       this.user.email = this.$localStorage.email || '';
     }
   }
 
   clearUsername(){
     this.user.email = '';
+    this.$localStorage.email = '';
     angular.element(document.getElementById('username-input')).focus();
   }
 

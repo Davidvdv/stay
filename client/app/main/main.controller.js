@@ -51,22 +51,25 @@ class MainController {
             return $state.go('main.timesheet', {id: currentTimesheet.id}, {replace: true});
           }
           else if (currentTimesheet.id === $state.params.id) {
+
             this.currentTimesheet = currentTimesheet;
             $timeout(() => {
               this.loadingCurrentTimesheet = false;
             });
 
             try {
+
               //Preload next timesheet
-              $log.debug('Preloading next timesheet');
               let index = _(timesheets).map((timesheet, index) => {
                 if(timesheet.id === currentTimesheet.id){
-                  return index;
+                  return index + 1;
                 }
-              }).first();
-              $log.debug('Preloading next timesheet', index);
+              }).filter().first();
 
-              return Timesheet.getTimesheet(timesheets && timesheets[index] && timesheets[index].id);
+              if(index < timesheets.length){
+                $log.debug('Preloading next timesheet', index);
+                return Timesheet.getTimesheet(timesheets && timesheets[index] && timesheets[index].id);
+              }
             }
             catch(err){$log.error(err);}
 

@@ -44,7 +44,7 @@ md-content.login-content(layout='column' layout-align='space-between center')
 
       md-input-container.username-input(md-no-float="true")
         input(id='username-input' type='input', name='email', ng-model='vm.user.email', placeholder='Username (eg ab1234)', ng-required='true'
-          tabindex='{{::vm.user.email ? "5" : "1"}}', ng-keypress='vm.error = false'
+          tabindex='{{vm.user.email ? "2" : "1"}}', ng-keypress='vm.error = false'
           ng-focus='vm.focus.email = true' ng-blur='vm.onUsernameBlur()', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
 
         md-button.md-icon-button.clear-user-button(ng-class='{"fade-in": vm.user.email}' tabindex='-1' ng-click='vm.clearUsername($event)')
@@ -53,9 +53,9 @@ md-content.login-content(layout='column' layout-align='space-between center')
       section(layout='row' flex)
         md-input-container(md-no-float="true")
           input(id='password-input' type='password', name='password', ng-keypress='vm.error = false' ng-model='vm.user.password', placeholder='Enter password', ng-required='true'
-            tabindex='{{::vm.user.email ? "1" : "2"}}')
+            tabindex='{{vm.user.email ? "2" : "3"}}')
 
-        md-button.login-button.md-icon-button.fade-in-content(type='submit', tabindex='3', ng-class='{"fade-in": vm.user.password}')
+        md-button.login-button.md-icon-button.fade-in-content(type='submit', tabindex='{{vm.user.email ? "4" : "-1"}}', ng-class='{"fade-in": vm.user.password}')
           md-icon(ng-hide='vm.submiting' md-font-set="material-icons") send
           md-progress-circular(ng-show='vm.submiting' md-mode="indeterminate" md-diameter='40')
 

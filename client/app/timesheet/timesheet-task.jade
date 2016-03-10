@@ -34,13 +34,12 @@ md-input-container.task-day-input(md-no-float="true")
 
 md-input-container.task-total-input.bold-input(md-no-float="true")
   label(ng-if='$first') Total
-  input(type='number' tabindex="1" min='0' max='99' ng-init="(task.total=task.total || 0) && setupTotalTaskWatcher(task)" ng-model='task.total')
+  input(type='number' tabindex="1" aria-label="Total hours" min='0' max='99' ng-init="(task.total=task.total || 0) && setupTotalTaskWatcher(task)" ng-model='task.total')
 
 
 md-menu.task-menu-input(md-position-mode="target-right target" ng-hide='$mdMedia("gt-lg")')
   md-button.md-icon-button(tabindex="1" aria-label='Open timesheet menu', ng-click='$mdOpenMenu($event)',)
     md-icon(md-font-set="material-icons") more_vert
-    //md-tooltip Menu
 
   md-menu-content(width='3')
     md-menu-item()
