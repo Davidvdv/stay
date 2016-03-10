@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia, Auth, $timeout) => ({
+  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia, Auth, $timeout, TimesheetDialog) => ({
     templateUrl: 'components/navbar/navbar.html',
     restrict: 'E',
     replace: true,
@@ -13,10 +13,20 @@ angular.module('stayApp')
       return init();
 
       function init(){
+        scope.addClient = addClient;
         scope.logout = Auth.logout;
         scope.toggleSideNav = buildToggler(appConfig.sideNavId);
         scope.navbarDesktopToggle = scope.navbarDesktopToggle === undefined;
         scope.isToggleFinished = true;
+      }
+
+      function addClient($event){
+        return TimesheetDialog.openProjectDialog($event)
+          .then(accepted => {
+            if (accepted) {
+
+            }
+          });
       }
 
 
