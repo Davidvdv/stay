@@ -1,6 +1,6 @@
 
 
-md-content.login-content(layout='column' layout-align='space-between center')
+md-content.login-content.fade-in-content(ng-class='{"fade-in": vm.loginInit}' layout='column' layout-align='space-between center')
 
   form.form(name='form', ng-submit='vm.login(form)', novalidate='' layout='row' flex)
 

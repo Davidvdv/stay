@@ -18,6 +18,9 @@ class LoginController {
 
 
     $timeout(() => {
+
+      this.loginInit = true;
+
       if(this.user.email) {
         angular.element(document.getElementById('password-input')).focus();
       }
