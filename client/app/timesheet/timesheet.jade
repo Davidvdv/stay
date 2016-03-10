@@ -35,6 +35,7 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
           include ./timesheet-task.jade
 
       md-content.bottom-actions(flex layout='column')
+        div(ng-hide='isKnownProject(projectName)') &nbsp;
         md-button.md-icon-button(ng-if='isKnownProject(projectName)', tabindex="1", ng-click='addRow(clientName, projectName)')
           md-icon(md-font-set="material-icons") add
           md-tooltip(md-direction='left') Add

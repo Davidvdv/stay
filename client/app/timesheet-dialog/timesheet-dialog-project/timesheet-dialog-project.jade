@@ -2,8 +2,10 @@ md-dialog.dialog.timesheet-dialog-project
 
   md-content(layout-padding flex layout='column')
 
+    h3 Search for a project
 
     md-content(flex layout='row')
+
 
       md-autocomplete.client-autocomplete(ng-disabled='isDisabled', md-autofocus="false" md-no-cache='noCache', md-selected-item='selectedClientItem',
       md-search-text-change='searchClientTextChange(searchClientsText)', md-search-text='searchClientsText',
@@ -27,12 +29,16 @@ md-dialog.dialog.timesheet-dialog-project
         md-not-found
           | No projects matching "{{searchProjectsText}}" were found.
 
+      md-button.add-project-button.md-raised(ng-click='complete($event, selectedClientItem, selectedProjectItem)') Add
+
 
 
     md-content(flex)
+
+      h3 or select a common project
       md-button.md-raised(ng-repeat='commonProject in commonProjects track by $index', ng-click='selectCommon($event, commonProject)')
         | {{commonProject.clientName}} {{commonProject.projectName}}
 
 
 
-    md-button.md-raised.md-primary(ng-click='complete($event, selectedClientItem, selectedProjectItem)') Done
+
