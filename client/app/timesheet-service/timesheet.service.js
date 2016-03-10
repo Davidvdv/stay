@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .service('Timesheet', function ($window, $http, $log, $q, $localStorage, Projects) {
+  .service('Timesheet', function ($window, $http, $log, $q, $localStorage, Projects, $state, $stateParams) {
 
 
     this.timesheets = $localStorage.timesheets = $window.timesheets || $localStorage.timesheets || undefined;
@@ -35,14 +35,17 @@ angular.module('stayApp')
       return this.getTimesheet(lastNonApprovedTimesheet.id);
     };
 
+    this.getCurrentTimesheet = () => {
+      if($state.current.name === 'main.timesheet' && $state.params.id){
+        return this.getTimesheet($state.params.id);
+      }
+    };
 
     this.getTimesheet = (id, {force} = {}) => {
 
       var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
 
       //TODO we should force this sometimes? mark them on getTimesheets() force
-
-
 
       return ( timesheet.rows && ! force ? $q.when(timesheet) : $http.get(`/api/timesheets/${id}`) )
         .then(response => {

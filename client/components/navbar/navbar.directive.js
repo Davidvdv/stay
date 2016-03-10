@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia, Auth, $timeout, TimesheetDialog) => ({
+  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia, Auth, $timeout, Timesheet, TimesheetDialog) => ({
     templateUrl: 'components/navbar/navbar.html',
     restrict: 'E',
     replace: true,
@@ -24,7 +24,10 @@ angular.module('stayApp')
         return TimesheetDialog.openProjectDialog($event)
           .then(accepted => {
             if (accepted) {
-
+              return Timesheet.getCurrentTimesheet()
+              .then(timesheet => {
+                  return Timesheet.addRowToProject(timesheet.id, accepted.clientItem.name, accepted.projectItem.name);
+                });
             }
           });
       }
