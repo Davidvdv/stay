@@ -25,6 +25,7 @@ angular.module('stayApp')
     }
 
     function selectedClientItemChange(clientItem){
+      $scope.searchProjectsText = '';
       return $scope.searchProjects(clientItem, '');
     }
 
