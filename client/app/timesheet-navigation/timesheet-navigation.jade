@@ -9,4 +9,5 @@ md-content.timesheet-navigation-content
         h5(ng-if='timesheet.status !== "Approved"')
          em {{getTimesheetTimeframe(timesheet)}}
 
-      md-icon.timesheet-approved-tick(ng-show='timesheet.status === "Approved"', md-font-set="material-icons") done
+      md-icon.timesheet-approved-tick(ng-show='timesheet.status !== "Approved"', md-font-set="material-icons") check_box_outline_blank
+      md-icon.timesheet-approved-tick(ng-show='timesheet.status === "Approved"', md-font-set="material-icons") check_box
