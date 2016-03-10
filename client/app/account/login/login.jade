@@ -43,7 +43,7 @@ md-content.login-content(layout='column' layout-align='space-between center')
         c-19.104,0-40.231-5.039-40.231-34.201c0-4.027,0.501-12.572,2.013-20.617L2083.701,338.518z')
 
       md-input-container.username-input(md-no-float="true")
-        input(id='username-input' type='input', name='email', ng-model='vm.user.email', placeholder='Username (eg ab1234)', ng-required='true'
+        input(id='username-input' ng-disabled='vm.submiting' type='input', name='email', ng-model='vm.user.email', placeholder='Username (eg ab1234)', ng-required='true'
           tabindex='{{vm.user.email ? "2" : "1"}}', ng-keypress='vm.error = false'
           ng-focus='vm.focus.email = true' ng-blur='vm.onUsernameBlur()', ng-class='{"username-exists": ! vm.focus.email && vm.user.email}')
 
@@ -52,7 +52,7 @@ md-content.login-content(layout='column' layout-align='space-between center')
 
       section(layout='row' flex)
         md-input-container(md-no-float="true")
-          input(id='password-input' type='password', name='password', ng-keypress='vm.error = false' ng-model='vm.user.password', placeholder='Enter password', ng-required='true'
+          input(id='password-input' ng-disabled='vm.submiting' type='password', name='password', ng-keypress='vm.error = false' ng-model='vm.user.password', placeholder='Enter password', ng-required='true'
             tabindex='{{vm.user.email ? "2" : "3"}}')
 
         md-button.login-button.md-icon-button.fade-in-content(type='submit', tabindex='{{vm.user.email ? "4" : "-1"}}', ng-class='{"fade-in": vm.user.password}')
