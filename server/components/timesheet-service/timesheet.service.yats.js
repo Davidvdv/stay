@@ -4,7 +4,7 @@ import * as yatsParse from '../yats-service/yats.parse.service.js';
 import * as yatsService from '../yats-service/yats.service.js';
 import cheerio from 'cheerio';
 import moment from 'moment';
-import Promise from 'Promise';
+import Promise from 'bluebird';
 import md5 from 'md5';
 import stringify from 'json-stringify-safe';
 
