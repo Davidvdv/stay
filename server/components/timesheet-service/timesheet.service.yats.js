@@ -56,18 +56,18 @@ export function createTimesheet(user, date){
 export function getDummyTimesheet(user){
   return Promise.resolve()
     .then(() => {
-      if(user.dummyProjectId){
-        return _getRawTimesheetEditResponse(user, user.dummyProjectId)
+      if(user.dummyTimesheetId){
+        return _getRawTimesheetEditResponse(user, user.dummyTimesheetId)
           .catch(err => {
 
             //TODO ensure error = doesn't exist
             console.error('Error getting users dummy timesheet id', err);
-            user.dummyProjectId = undefined;
+            user.dummyTimesheetId = undefined;
             //TODO turn into service
-            UserModel.findOneAsync({dummyProjectId: user.description})
+            UserModel.findOneAsync({dummyTimesheetId: user.description})
             .then(user => {
                 if(user){
-                  user.dummyProjectId = undefined;
+                  user.dummyTimesheetId = undefined;
                   return user.saveAsync();
                 }
                 else {
@@ -77,6 +77,9 @@ export function getDummyTimesheet(user){
 
             return undefined;
           });
+      }
+      else {
+        return undefined;
       }
 
     })
@@ -100,7 +103,7 @@ export function getDummyTimesheet(user){
                       UserModel.findOneAsync({email: user.email})
                         .then(user => {
                           if(user){
-                            user.dummyProjectId = dummyTimesheetId;
+                            user.dummyTimesheetId = dummyTimesheetId;
                             return user.saveAsync();
                           }
                           else { throw new Error('Authenticated user doesn\'t exist?'); }

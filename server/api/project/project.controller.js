@@ -53,6 +53,20 @@ export function omniSearch(req, res){
     });
 }
 
+export function getOmniProjectsObject(req, res){
+
+  if(! req.user.ssoCookieKey){ return res.sendStatus(401); }
+
+  return projectService.getOmniProjectsObject(req.user)
+  .then(results => {
+      return res.json(results);
+    })
+  .catch(err => {
+      console.error('Error geting omni search object', err);
+      return res.sendStatus(500);
+    });
+}
+
 export function getClients(req, res){
 
   if(! req.user.ssoCookieKey){ return res.sendStatus(401); }

@@ -8,7 +8,6 @@ class MainController {
 
     Projects.getProjects()
       .then(projects => {
-        $log.debug('projects', projects);
         this.projects = projects;
       });
 

@@ -17,7 +17,7 @@ var UserSchema = new Schema({
 
 
   //Need these things anywhere
-  dummyProjectId: String,
+  dummyTimesheetId: String,
   ssoCookieKey: String,
   ssoCookieValue: String,
 

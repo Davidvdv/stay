@@ -4,62 +4,83 @@ import * as yatsService from '../yats-service/yats.service.js';
 import * as yatsParse from '../yats-service/yats.parse.service.js';
 import ProjectYatsProjectsModel from './project.model.yats.projects.js';
 import ProjectYatsClientsModel from './project.model.yats.clients.js';
+import * as timesheetService from '../timesheet-service/timesheet.service.local.js';
 import _ from 'lodash';
 import Promise from 'bluebird';
 import cheerio from 'cheerio';
 
 
+
+
+
+
 export function searchProjects(user, clientId, editTimesheet){
 
-  console.log('YATS search projects', clientId);
+  console.log('YATS search projects', typeof clientId, clientId);
 
   return ProjectYatsProjectsModel.findOneAsync({ clientId: clientId })
-    .then(cachedProjectsBody => {
-      console.log('YATS search projects found cache', clientId, cachedProjectsBody, (cachedProjectsBody ? 'moooo' : 'ahhhhh'));
-      if(cachedProjectsBody){
+    .then(cachedProjects => {
 
-        return [undefined, cachedProjectsBody.body];
+      if(cachedProjects){
+        console.log('YATS search projects found cache', clientId, cachedProjects.projects);
+        return [undefined, cachedProjects.body];
       }
       else {
-        return _getRawSearchProjects(user, clientId, editTimesheet);
+        console.log('YATS search projects no cache', clientId);
+        return timesheetService.getDummyTimesheet(user)
+          .then(editTimesheet => {
+            return _getRawSearchProjects(user, clientId, editTimesheet);
+          });
       }
     })
     .then(([response, body]) => {
 
       let projects = parseProjectsFromResponse(body);
 
-      //TODO cache to database
-      ProjectYatsProjectsModel.findAsync({ clientId: clientId })
-        .then(cachedProjects => {
-          if( cachedProjects === undefined ){
-            return ProjectYatsProjectsModel.createAsync({
-              clientId: clientId,
-              body: body
-            });
-          }
-        });
+      ProjectYatsProjectsModel.createAsync({
+        clientId: clientId,
+        body,
+        projects
+      });
 
       return projects;
     });
 }
 
-export function getClientsFromTimesheet(user, id){
-  return ProjectYatsClientsModel.findOneAsync({ timesheetId: id })
-  .then(clientsResponse => {
-      if( ! clientsResponse){
-        return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/edit/${id}`)
+export function getClientsFromTimesheet(user){
+
+  return Promise.resolve()
+    .then(() => {
+      if(user.dummyTimesheetId){
+        return user.dummyTimesheetId;
       }
       else {
-        return [undefined, clientsResponse.body];
+        return timesheetService.getDummyTimesheet(user)
+          .then(dummyTimesheet => { return dummyTimesheet.id; })
       }
     })
-    .then(([response, body]) => {
+    .then(dummyTimesheetId => {
+      return ProjectYatsClientsModel.findOneAsync({ timesheetId: dummyTimesheetId })
+        .then(clientsResponse => {
+          if( ! clientsResponse){
+            return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/edit/${dummyTimesheetId}`)
+          }
+          else {
+            return [undefined, clientsResponse.body];
+          }
+        })
+        .then(([response, body]) => {
 
-      ProjectYatsClientsModel.createAsync({
-        timesheetId: id,
-        body
-      });
-      return _.merge(parseClientsFromResponse(body), {timesheetId: id});
+          let clients = parseClientsFromResponse(body);
+
+          ProjectYatsClientsModel.createAsync({
+            timesheetId: dummyTimesheetId,
+            body,
+            clients
+          });
+
+          return _.merge(clients, { timesheetId: dummyTimesheetId });
+        });
     });
 }
 
@@ -124,15 +145,20 @@ function _getRawSearchProjects(user, clientId, editTimesheet){
   firstRow.activityId = '';
   firstRow.taskId = '';
 
-  return yatsService.post(user, `https://yats.solnetsolutions.co.nz/timesheets/update_row_and_clear_ajax/${firstRow.id}?timesheet_id=${editTimesheet.id}`, yatsService.getSaveRowFormData(firstRow)).then(([response, body]) => {
-    console.log('Successfully got projects', response.statusCode);
+  return yatsService.post(user,
+      `https://yats.solnetsolutions.co.nz/timesheets/update_row_and_clear_ajax/${firstRow.id}?timesheet_id=${editTimesheet.id}`,
+      yatsService.getSaveRowFormData(firstRow)
+    )
+    .then(([response, body]) => {
 
-    if(body.indexOf('Yats has encountered an unexpected error. Please notify your Systems Administrator.') !== -1){
-      throw new Error('Faied to update row');
-    }
+      console.log('Successfully got projects', response.statusCode);
 
-    return [response, body];
-  });
+      if(body.indexOf('Yats has encountered an unexpected error. Please notify your Systems Administrator.') !== -1){
+        throw new Error('Faied to update row');
+      }
+
+      return [response, body];
+    });
 }
 
 

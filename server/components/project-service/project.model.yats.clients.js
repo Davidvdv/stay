@@ -7,10 +7,14 @@ var ProjectClientsYatsSchema = new mongoose.Schema({
     type: String,
     uniq: true
   },
+  clients: [{
+    id: String,
+    name: String
+  }],
   body: String
 },
 {
   timestamps: true
 });
 
-export default mongoose.model('ProjecClientstYats', ProjectClientsYatsSchema);
+export default mongoose.model('ProjectClientsYats', ProjectClientsYatsSchema);

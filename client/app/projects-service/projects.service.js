@@ -6,6 +6,7 @@ angular.module('stayApp')
 
     this.projects = $localStorage.projects = $window.projects || $localStorage.projects || undefined;
 
+
     //TODO namespace with user
     this.commonProjects = $localStorage.commonProjects = $window.commonProjects || $localStorage.commonProjects || [];
 
@@ -17,15 +18,12 @@ angular.module('stayApp')
 
 
     this.getProjects = ({force} = {}) => {
-
-      console.log('getProjects', this.projects);
-
-      return this.projects ? $q.when(this.projects) : $http.get(`/api/projects`, { cache: true })
+      return this.projects && ! force ? $q.when(this.projects) : $http.get(`/api/projects/omni`, { cache: true })
         .then(response => {
           this.projects = response.data;
           $localStorage.projects = response.data;
         })
-        .then(this.getProjects)
+        .then(this.getOmniProjectsObject)
         .catch(err => {
           $log.error(err);
         });
@@ -58,7 +56,6 @@ angular.module('stayApp')
         return _.first(clients);
       });
     };
-
 
     this.searchClients = (query = '') => {
       return this.getProjects()
