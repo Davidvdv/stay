@@ -84,7 +84,7 @@ angular.module('stayApp')
           return project.name.toLowerCase().indexOf(query) !== -1;
         }).value());
       }
-      else if(client.projectsPromise){
+      else if(client.projectsPromise && client.projectsPromise.then){
         return client.projectsPromise.then(response => {
           $log.debug('search projects response', response.data);
           client.projects = response.data;
