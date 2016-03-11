@@ -110,7 +110,10 @@
   "scripts": {
     "start": "node server",
     "test": "grunt test --force",
-    "update-webdriver": "node node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update"
+    "update-webdriver": "node node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update",
+    "drop-dev-database": "mongo stay-dev --eval \"db.dropDatabase();\"",
+    "drop-test-database": "mongo stay-test --eval \"db.dropDatabase();\"",
+    "drop-database": "npm run-script drop-dev-database & npm run-script drop-test-database"
   },
   "private": true
 }

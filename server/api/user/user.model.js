@@ -14,8 +14,14 @@ var UserSchema = new Schema({
     type: String,
     default: 'user'
   },
+
+
+  //Need these things anywhere
+  dummyProjectId: String,
   ssoCookieKey: String,
   ssoCookieValue: String,
+
+
   password: String,
   provider: String,
   salt: String

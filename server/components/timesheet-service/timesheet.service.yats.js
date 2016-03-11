@@ -2,6 +2,8 @@
 import _ from 'lodash';
 import * as yatsParse from '../yats-service/yats.parse.service.js';
 import * as yatsService from '../yats-service/yats.service.js';
+import * as timesheetYatsModel from './timesheet.model.yats.js';
+import UserModel from '../../api/user/user.model.js';
 import cheerio from 'cheerio';
 import moment from 'moment';
 import Promise from 'bluebird';
@@ -16,6 +18,7 @@ export function getTimesheets(user, timesheetPage) {
       return parseTimesheetsFromResponse(body);
     });
 }
+
 
 export function getTimesheet(user, id){
   return Promise.all([
@@ -33,46 +36,107 @@ export function getTimesheet(user, id){
     });
 }
 
+
+export function saveTimesheet(user, timesheet){
+  throw new Error('timesheet.service.yats:saveTimesheet unsupported');
+}
+
+
+export function completeTimesheet(user, timesheet){
+  throw new Error('timesheet.service.yats:completeTimesheet unsupported');
+}
+
+
 export function createTimesheet(user, date){
   //TODO should parse this response
   return _createTimesheetRaw(user, date);
 }
 
+
 export function getDummyTimesheet(user){
-  return _createTimesheetRaw(user, '1969-3-1')
-    .catch(err => {
-      console.log(err.toString());
-      if(err && err.toString() === 'Error: Timesheet already exists'){
-        return getTimesheets(user)
-          .then(timesheets => {
-            return getTimesheets(user, timesheets.maxPageNumber)
-              .then(({timesheets}) => {
-                return _getRawTimesheetEditResponse(user, timesheets[timesheets.length - 1].id);
+  return Promise.resolve()
+    .then(() => {
+      if(user.dummyProjectId){
+        return _getRawTimesheetEditResponse(user, user.dummyProjectId)
+          .catch(err => {
+
+            //TODO ensure error = doesn't exist
+            console.error('Error getting users dummy timesheet id', err);
+            user.dummyProjectId = undefined;
+            //TODO turn into service
+            UserModel.findOneAsync({dummyProjectId: user.description})
+            .then(user => {
+                if(user){
+                  user.dummyProjectId = undefined;
+                  return user.saveAsync();
+                }
+                else {
+                  throw new Error('Authenticated user doesn\'t exist?');
+                }
               });
+
+            return undefined;
           });
       }
+
+    })
+    .then(([timesheetResponse, timesheetBody] = [false, false]) => {
+      if(timesheetBody){
+        return [timesheetResponse, timesheetBody];
+      }
       else {
-        throw err;
+        return _createTimesheetRaw(user, '1969-3-1')
+          .catch(err => {
+            console.log(err.toString());
+            if(err && err.toString() === 'Error: Timesheet already exists'){
+              return getTimesheets(user)
+                .then(timesheets => {
+                  return getTimesheets(user, timesheets.maxPageNumber)
+                    .then(({timesheets}) => {
+
+                      let dummyTimesheetId = timesheets[timesheets.length - 1].id;
+
+                      //TODO turn into service
+                      UserModel.findOneAsync({email: user.email})
+                        .then(user => {
+                          if(user){
+                            user.dummyProjectId = dummyTimesheetId;
+                            return user.saveAsync();
+                          }
+                          else { throw new Error('Authenticated user doesn\'t exist?'); }
+                        });
+
+                      return _getRawTimesheetEditResponse(user, dummyTimesheetId);
+                    });
+                });
+            }
+            else {
+              throw err;
+            }
+          });
       }
     })
     .then(([response, body]) => {
       return parseTimesheetFromEditResponse(body);
     });
-}
 
+}
 
 
 function _getRawTimesheetsResponse(user, timesheetPage = 1){
   return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/list?page=${timesheetPage}`);
 }
 
+
 function _getRawTimesheetViewResponse(user, id){
   return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/show/${id}`);
 }
 
+
 function _getRawTimesheetEditResponse(user, id){
   return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/edit/${id}`);
 }
+
 
 function _createTimesheetRaw(user, date){
   return yatsService.post(user, `https://yats.solnetsolutions.co.nz/timesheets/create`, `timesheet[end_date]=${date}&commit=Create&warning_flag=`)
@@ -125,13 +189,9 @@ function getRowProject(row){
 
 
 
-
-
 function parseTimesheetIdFromEditResponse(body){
   const $ = cheerio.load(body);
-
   var action = $($('#timesheet_form').get(0)).attr('action') || '';
-
   return _.last(action.split('/'));
 }
 

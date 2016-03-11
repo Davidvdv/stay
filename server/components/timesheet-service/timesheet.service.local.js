@@ -9,7 +9,8 @@ export function getTimesheets(user, timesheetPage){
   return timesheetYats.getTimesheets(user, timesheetPage)
     .then((timesheets = {timesheets: [{}]}) => {
 
-      console.log('Check to see if we should create a new timesheet for the current week', timesheets.timesheets[0].endDatePretty, timesheets.timesheets[0].endDatePretty && timesheets.timesheets[0].endDatePretty.indexOf('in') === -1);
+      console.log('Check to see if we should create a new timesheet for the current week');
+      console.log('Check to see if we should create a new timesheet for the current week', timesheets && timesheets.timesheets && timesheets.timesheets[0] && timesheets.timesheets[0].endDatePretty, timesheets.timesheets[0].endDatePretty && timesheets.timesheets[0].endDatePretty.indexOf('in') === -1);
 
       if(timesheets.timesheets[0].endDatePretty.indexOf('in') === -1){
 
@@ -30,6 +31,10 @@ export function getTimesheets(user, timesheetPage){
       }
 
     });
+}
+
+export function saveTimesheet(user, timesheet){
+  return timesheetYats.saveTimesheet(user, id);
 }
 
 export function getTimesheet(user, id){

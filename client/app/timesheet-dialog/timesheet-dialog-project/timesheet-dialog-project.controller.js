@@ -16,6 +16,7 @@ angular.module('stayApp')
       $scope.searchProjects = Projects.searchProjects;
       $scope.searchClients = Projects.searchClients;
       $scope.selectCommon = selectCommon;
+      $scope.getAvatarClientName = getAvatarClientName;
 
       $scope.noCache = true;
 
@@ -29,6 +30,10 @@ angular.module('stayApp')
 
     function selectCommon($event, commonProject){
       return complete($event, {name: commonProject.clientName}, {name: commonProject.projectName});
+    }
+
+    function getAvatarClientName(clientName){
+      return clientName.substring(0, 2);
     }
 
     function closeDialog(){

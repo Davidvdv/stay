@@ -41,9 +41,11 @@ md-dialog.dialog.timesheet-dialog-project
 
       md-content.common-project-content(flex layout='row')
 
-        md-button.md-raised.common-project-button(ng-repeat='commonProject in commonProjects track by $index',
-        ng-click='selectCommon($event, commonProject)'
-        random-color='{{commonProject.clientName}}')
+        md-button.common-project-button(flex layout='row' ng-repeat='commonProject in commonProjects track by $index',
+          ng-click='selectCommon($event, commonProject)')
+          div
+            .common-project-button-circle(flex random-color='{{commonProject.clientName}}')
+              .client-name-avatar() {{getAvatarClientName(commonProject.clientName)}}
           div(flex layout='column')
             h4 {{commonProject.projectName}}
             em {{commonProject.clientName}}

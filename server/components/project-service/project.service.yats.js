@@ -2,15 +2,43 @@
 
 import * as yatsService from '../yats-service/yats.service.js';
 import * as yatsParse from '../yats-service/yats.parse.service.js';
+import ProjectYatsProjectsModel from './project.model.yats.projects.js';
 import _ from 'lodash';
 import Promise from 'bluebird';
 import cheerio from 'cheerio';
 
 
 export function searchProjects(user, clientId, editTimesheet){
-  return _getRawSearchProjects(user, clientId, editTimesheet)
+
+  console.log('YATS search projects', clientId);
+
+  return ProjectYatsProjectsModel.findOneAsync({ clientId: clientId })
+    .then(cachedProjectsBody => {
+      console.log('YATS search projects found cache', clientId, cachedProjectsBody, (cachedProjectsBody ? 'moooo' : 'ahhhhh'));
+      if(cachedProjectsBody){
+
+        return [undefined, cachedProjectsBody.body];
+      }
+      else {
+        return _getRawSearchProjects(user, clientId, editTimesheet);
+      }
+    })
     .then(([response, body]) => {
-      return parseProjectsFromResponse(body);
+
+      let projects = parseProjectsFromResponse(body);
+
+      //TODO cache to database
+      ProjectYatsProjectsModel.findAsync({ clientId: clientId })
+        .then(cachedProjects => {
+          if( cachedProjects === undefined ){
+            return ProjectYatsProjectsModel.createAsync({
+              clientId: clientId,
+              body: body
+            });
+          }
+        });
+
+      return projects;
     });
 }
 
@@ -18,28 +46,6 @@ export function searchProjects(user, clientId, editTimesheet){
 export function getClientsFromTimesheet(user, editableTimesheetId){
   return _getClientsFromTimesheet(user, editableTimesheetId);
 }
-
-
-
-function _getRawSearchProjects(user, clientId, editTimesheet){
-  let firstRow = editTimesheet.rows[0];
-
-  firstRow.clientId = clientId;
-  firstRow.projectId = '';
-  firstRow.activityId = '';
-  firstRow.taskId = '';
-
-  return yatsService.post(user, `https://yats.solnetsolutions.co.nz/timesheets/update_row_and_clear_ajax/${firstRow.id}?timesheet_id=${editTimesheet.id}`, yatsService.getSaveRowFormData(firstRow)).then(([response, body]) => {
-    console.log('Successfully got projects', response.statusCode);
-
-    if(body.indexOf('Yats has encountered an unexpected error. Please notify your Systems Administrator.') !== -1){
-      throw new Error('Faied to update row');
-    }
-
-    return [response, body];
-  });
-}
-
 
 
 function _getClientsFromTimesheet(user, id){
@@ -101,3 +107,25 @@ function parseRowIdFromEditResponse(body, rowIndex){
 
   return ($timesheetEditProjectSelect.attr('id') || '').replace('week_row_', '').replace('_client_id', '');
 }
+
+
+function _getRawSearchProjects(user, clientId, editTimesheet){
+  let firstRow = editTimesheet.rows[0];
+
+  firstRow.clientId = clientId;
+  firstRow.projectId = '';
+  firstRow.activityId = '';
+  firstRow.taskId = '';
+
+  return yatsService.post(user, `https://yats.solnetsolutions.co.nz/timesheets/update_row_and_clear_ajax/${firstRow.id}?timesheet_id=${editTimesheet.id}`, yatsService.getSaveRowFormData(firstRow)).then(([response, body]) => {
+    console.log('Successfully got projects', response.statusCode);
+
+    if(body.indexOf('Yats has encountered an unexpected error. Please notify your Systems Administrator.') !== -1){
+      throw new Error('Faied to update row');
+    }
+
+    return [response, body];
+  });
+}
+
+

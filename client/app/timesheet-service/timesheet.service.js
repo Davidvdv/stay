@@ -57,6 +57,7 @@ angular.module('stayApp')
             .then(timesheets => {
                 var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
 
+                //TODO merge rows better!
                 //If the hash is the same then dont attempt to merge it
                 return timesheet.hash && timesheet.hash === response.data.hash ?
                   timesheet : _.merge(timesheet, (response.data || {}));
