@@ -20,7 +20,7 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
           h3 {{getProjectNameDisplay(projectName)}}
             md-button.edit-project-button.md-icon-button(ng-click='openProjectMoveDialog($event, timesheet, projectValue, clientName, projectName)')
               md-icon(md-font-set="material-icons") edit
-              md-tooltip(md-direction='right') Edit
+              md-tooltip(md-direction='right') Edit project
 
 
 
@@ -36,7 +36,7 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
         div(ng-hide='isKnownProject(projectName)') &nbsp;
         md-button.md-icon-button(ng-if='isKnownProject(projectName)', tabindex="1", ng-click='addRow(clientName, projectName)')
           md-icon(md-font-set="material-icons") add
-          md-tooltip(md-direction='left') Add
+          md-tooltip(md-direction='left') Add row
 
 
 

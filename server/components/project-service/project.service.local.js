@@ -10,9 +10,16 @@ import * as timesheetYats from '../timesheet-service/timesheet.service.yats.js';
 
 export function omniSearch(user, query = ''){
 
-  //TODO keep these in memory?
+  //TODO index / keep these in memory?
   return getClients(user)
     .then(clients => {
+
+      let projects = Promise.all(_(clients.clients).map(client => {
+        return searchProjects(user, client.id);
+      }).value())
+        .then(moo => {
+          console.log('moo', moo);
+        });
 
     });
 
@@ -51,6 +58,7 @@ export function getClients(user){
 function cacheClients(user, clients){
 
   console.log('Caching clients', clients && clients.clients && clients.clients.length);
+
   _.forEach(clients.clients, (client, index) => {
     ((index) => {
       setTimeout(() => {

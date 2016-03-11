@@ -2,8 +2,8 @@
 
 var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 
-var ProjectYatsSchema = new mongoose.Schema({
-  projectId: {
+var ProjectClientsYatsSchema = new mongoose.Schema({
+  timesheetId: {
     type: String,
     uniq: true
   },
@@ -13,4 +13,4 @@ var ProjectYatsSchema = new mongoose.Schema({
   timestamps: true
 });
 
-export default mongoose.model('ProjectYats', ProjectYatsSchema);
+export default mongoose.model('ProjecClientstYats', ProjectClientsYatsSchema);

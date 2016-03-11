@@ -19,12 +19,14 @@ angular.module('stayApp', [
 
     $locationProvider.html5Mode(true);
 
+
+    //TODO create this theme
     $mdThemingProvider.definePalette('amazingPaletteName', {
       '50': 'FFFFFF',
-      '100': '0E589E',
-      '200': '0E589E',
-      '300': '0E589E',
-      '400': '0E589E',
+      '100': 'FFFFFF',
+      '200': 'FFFFFF',
+      '300': 'FFFFFF',
+      '400': 'FFFFFF',
       '500': '0E589E',
       '600': '0E589E',
       '700': '0E589E',

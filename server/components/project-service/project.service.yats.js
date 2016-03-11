@@ -3,6 +3,7 @@
 import * as yatsService from '../yats-service/yats.service.js';
 import * as yatsParse from '../yats-service/yats.parse.service.js';
 import ProjectYatsProjectsModel from './project.model.yats.projects.js';
+import ProjectYatsClientsModel from './project.model.yats.clients.js';
 import _ from 'lodash';
 import Promise from 'bluebird';
 import cheerio from 'cheerio';
@@ -42,19 +43,25 @@ export function searchProjects(user, clientId, editTimesheet){
     });
 }
 
-
-export function getClientsFromTimesheet(user, editableTimesheetId){
-  return _getClientsFromTimesheet(user, editableTimesheetId);
-}
-
-
-function _getClientsFromTimesheet(user, id){
-  return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/edit/${id}`)
+export function getClientsFromTimesheet(user, id){
+  return ProjectYatsClientsModel.findOneAsync({ timesheetId: id })
+  .then(clientsResponse => {
+      if( ! clientsResponse){
+        return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/edit/${id}`)
+      }
+      else {
+        return [undefined, clientsResponse.body];
+      }
+    })
     .then(([response, body]) => {
+
+      ProjectYatsClientsModel.createAsync({
+        timesheetId: id,
+        body
+      });
       return _.merge(parseClientsFromResponse(body), {timesheetId: id});
     });
 }
-
 
 
 
