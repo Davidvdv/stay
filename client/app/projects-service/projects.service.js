@@ -17,7 +17,10 @@ angular.module('stayApp')
 
 
     this.getProjects = ({force} = {}) => {
-      return this.projects ? $q.when(this.projects) : $http.get(`/api/timesheets/projects`, { cache: true })
+
+      console.log('getProjects', this.projects);
+
+      return this.projects ? $q.when(this.projects) : $http.get(`/api/projects`, { cache: true })
         .then(response => {
           this.projects = response.data;
           $localStorage.projects = response.data;
@@ -29,16 +32,24 @@ angular.module('stayApp')
     };
 
     this.addCommon = (clientName, projectName) => {
-      var exists = _(this.commonProjects).filter(project => {project.clientName === clientName && project.projectName === projectName;}).first();
+      var exists = _(this.commonProjects).filter(project => {
+        return project.clientName === clientName && project.projectName === projectName;
+      }).first();
+
       if(! exists && clientName && projectName !== 'PROJECT_UNKNOWN'){
         this.commonProjects.push({
           clientName,
           projectName
         });
       }
+      else {
+        //TODO add a hit to the project to increase its 'commonness'
+      }
     };
 
     this.getCommon = () => {
+      //TODO order by hit
+      
       return $q.when(this.commonProjects);
     };
 
@@ -81,7 +92,7 @@ angular.module('stayApp')
         });
       }
       else {
-        client.projectsPromise = $http.get(`/api/timesheets/projects/${client.id}`)
+        client.projectsPromise = $http.get(`/api/projects/${client.id}`)
         return this.searchProjects(client, query);
       }
 

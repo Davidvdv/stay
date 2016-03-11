@@ -15,7 +15,7 @@ angular.module('stayApp')
         return init();
 
         function init(){
-          scope.getProjectNameDisplay = getProjectNameDisplay
+          scope.getProjectNameDisplay = getProjectNameDisplay;
           scope.getClientNameDisplay = getClientNameDisplay;
           scope.isKnownProject = isKnownProject;
           scope.openProjectMoveDialog = openProjectMoveDialog;
@@ -27,7 +27,7 @@ angular.module('stayApp')
 
           scope.setupTotalWatcher = setupTotalTaskWatcher;
 
-          $timeout(() => {scope.isLoaded = true;})
+          $timeout(() => {scope.isLoaded = true;});
         };
 
 
@@ -55,11 +55,13 @@ angular.module('stayApp')
           return typeof day === 'number' ? day : (isNaN(parseInt(day)) ? 0 : parseInt(day) );
         }
 
-        function openProjectMoveDialog($event){
+        function openProjectMoveDialog($event, timesheet, tasks, clientName, projectName){
           return TimesheetDialog.openProjectDialog($event)
             .then(accepted => {
               if (accepted) {
-
+                return _.forEach(tasks, (task, taskIndex) => {
+                  return Timesheet.moveTimesheetTask(0, timesheet, clientName, projectName, accepted.clientItem, accepted.projectItem);
+                });
               }
             });
         }

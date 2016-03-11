@@ -8,9 +8,9 @@ md-dialog.dialog.timesheet-dialog-project
 
 
       md-autocomplete.client-autocomplete(ng-disabled='isDisabled', md-autofocus="false" md-no-cache='noCache', md-selected-item='selectedClientItem',
-      md-search-text-change='searchClientTextChange(searchClientsText)', md-search-text='searchClientsText',
+      md-search-text-change='searchClientTextChange(searchClientsText)', md-search-text='searchClientsText', md-autoselect='true'
       md-selected-item-change='selectedClientItemChange(clientItem)', md-items='clientItem in searchClients(searchClientsText)',
-      md-item-text='clientItem.name', md-min-length='0', placeholder='Enter the client name')
+      md-item-text='clientItem.name', md-min-length='0', placeholder='Enter the client name', md-match-case-insensitive='true')
 
         md-item-template
           span(md-highlight-text='searchClientsText', md-highlight-flags='^i') {{clientItem.name}}
@@ -19,10 +19,10 @@ md-dialog.dialog.timesheet-dialog-project
 
 
 
-      md-autocomplete.project-autocomplete(ng-disabled='isDisabled', md-no-cache='noCache', md-selected-item='selectedProjectItem',
-      md-search-text-change='searchProjectTextChange(searchProjectsText)', md-search-text='searchProjectsText',
+      md-autocomplete.project-autocomplete(ng-disabled='isDisabled || ! selectedClientItem', md-no-cache='noCache', md-selected-item='selectedProjectItem',
+      md-search-text-change='searchProjectTextChange(searchProjectsText)', md-search-text='searchProjectsText', md-autoselect='true'
       md-selected-item-change='selectedProjectItemChange(projectItem)', md-items='projectItem in searchProjects(selectedClientItem, searchProjectsText)',
-      md-item-text='projectItem.name', md-min-length='0', placeholder='Enter the project name')
+      md-item-text='projectItem.name', md-min-length='0', placeholder='Enter the project name', md-match-case-insensitive='true')
 
         md-item-template
           span(md-highlight-text='searchProjectsText', md-highlight-flags='^i') {{projectItem.name}}
@@ -31,6 +31,8 @@ md-dialog.dialog.timesheet-dialog-project
 
       md-button.add-project-button.md-raised(ng-click='complete($event, selectedClientItem, selectedProjectItem)') Add
 
+
+    md-divider
 
 
     md-content(flex layout='column')

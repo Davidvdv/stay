@@ -48,18 +48,25 @@ angular.module('stayApp')
       //TODO we should force this sometimes? mark them on getTimesheets() force
 
       return ( timesheet.rows && ! force ? $q.when(timesheet) : $http.get(`/api/timesheets/${id}`) )
-        .then(response => {
+        .then((response = { data: {}}) => {
 
           var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
-          if( ! timesheet || ! timesheet.row){
+
+          if( ! timesheet || ! timesheet.rows){
             return this.getTimesheets()
             .then(timesheets => {
                 var timesheet = _(this.timesheets).filter(timesheet => {return timesheet.id === id;}).first() || {};
-                return _.merge(timesheet, (response.data || {}));
+
+                //If the hash is the same then dont attempt to merge it
+                return timesheet.hash && timesheet.hash === response.data.hash ?
+                  timesheet : _.merge(timesheet, (response.data || {}));
               });
           }
           else {
-            return _.merge(timesheet, (response.data || {}));
+            //TODO we do not want to re merge existing rows
+            //If the hash is the same then dont attempt to merge it
+            return timesheet.hash && response.data && timesheet.hash === response.data.hash ?
+              timesheet : _.merge(timesheet, (response.data || {}));
           }
 
         })

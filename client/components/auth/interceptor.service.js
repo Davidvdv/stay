@@ -22,8 +22,10 @@ function authInterceptor($rootScope, $q, $cookies, $injector, Util) {
         // remove any stale tokens
         $cookies.remove('token');
 
-        (Timesheet || (Timesheet = $injector.get('Timesheet'))).clearProjectsCache();
-        (Timesheet || (Timesheet = $injector.get('Timesheet'))).clearTimesheetsCache();
+        //(Timesheet || (Timesheet = $injector.get('Timesheet'))).clearTimesheetsCache();
+
+        //TODO - anything that is not a login request should be denied / blocked
+
       }
       return $q.reject(response);
     }

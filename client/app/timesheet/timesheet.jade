@@ -18,7 +18,7 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
           h1.show-collapsed-menu {{getClientNameDisplay(clientName)}}
 
           h3 {{getProjectNameDisplay(projectName)}}
-            md-button.edit-project-button.md-icon-button(ng-click='openProjectMoveDialog($event)')
+            md-button.edit-project-button.md-icon-button(ng-click='openProjectMoveDialog($event, timesheet, projectValue, clientName, projectName)')
               md-icon(md-font-set="material-icons") edit
               md-tooltip(md-direction='right') Edit
 

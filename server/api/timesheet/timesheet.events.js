@@ -5,7 +5,7 @@
 'use strict';
 
 import {EventEmitter} from 'events';
-var Timesheet = require('./timesheet.model');
+var Timesheet = require('../../components/timesheet-service/timesheet.model');
 var TimesheetEvents = new EventEmitter();
 
 // Set max event listeners (0 == unlimited)

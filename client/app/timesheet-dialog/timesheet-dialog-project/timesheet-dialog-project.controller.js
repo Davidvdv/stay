@@ -17,6 +17,7 @@ angular.module('stayApp')
       $scope.searchClients = Projects.searchClients;
       $scope.selectCommon = selectCommon;
 
+      $scope.noCache = true;
 
       $scope.searchProjectsText = '';
       $scope.searchClientsText = '';
