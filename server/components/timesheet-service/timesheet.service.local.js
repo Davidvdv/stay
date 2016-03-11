@@ -1,6 +1,5 @@
 
 import _ from 'lodash';
-import Promise from 'bluebird';
 import * as timesheetYats from './timesheet.service.yats.js'
 import moment from 'moment';
 

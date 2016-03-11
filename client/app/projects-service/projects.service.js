@@ -49,7 +49,7 @@ angular.module('stayApp')
 
     this.getCommon = () => {
       //TODO order by hit
-      
+
       return $q.when(this.commonProjects);
     };
 
