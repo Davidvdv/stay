@@ -5,7 +5,7 @@ var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 var ProjectYatsSchema = new mongoose.Schema({
   clientId: {
     type: String,
-    uniq: true
+    unique: true
   },
   projects: [{
     id: String,
