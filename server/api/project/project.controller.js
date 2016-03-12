@@ -38,21 +38,6 @@ export function searchProjects(req, res){
     });
 }
 
-export function omniSearch(req, res){
-
-  if(! req.user.ssoCookieKey){ return res.sendStatus(401); }
-  if(! req.params.query){ return res.sendStatus(400); }
-
-  return projectService.omniSearch(req.user, req.params.query)
-  .then(results => {
-      return res.json(results);
-    })
-  .catch(err => {
-      console.error('Error omni searching ' + req.params.query, err);
-      return res.sendStatus(500);
-    });
-}
-
 export function getOmniProjectsObject(req, res){
 
   if(! req.user.ssoCookieKey){ return res.sendStatus(401); }

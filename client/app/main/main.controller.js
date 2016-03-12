@@ -6,10 +6,6 @@ class MainController {
 
   constructor($scope, $log, Timesheet, Projects, $state, $stateParams, $rootScope, $timeout, $q) {
 
-    Projects.getProjects()
-      .then(projects => {
-        this.projects = projects;
-      });
 
     // Refreshed cached content
     Timesheet.getTimesheets({force: true});
@@ -57,6 +53,14 @@ class MainController {
             });
 
             try {
+
+              //Preload projects
+              $timeout(() => {
+                return Projects.getProjects()
+                  .then(projects => {
+                    this.projects = projects;
+                  });
+              });
 
               //Preload next timesheet
               let index = _(timesheets).map((timesheet, index) => {

@@ -7,6 +7,9 @@ var ProjectClientsYatsSchema = new mongoose.Schema({
     type: String,
     unique: true
   },
+  timesheetRowId: {
+    type: String
+  },
   clients: [{
     id: String,
     name: String

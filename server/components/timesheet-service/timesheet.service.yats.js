@@ -59,23 +59,20 @@ export function getDummyTimesheet(user){
       if(user.dummyTimesheetId){
         return _getRawTimesheetEditResponse(user, user.dummyTimesheetId)
           .catch(err => {
-
-            //TODO ensure error = doesn't exist
             console.error('Error getting users dummy timesheet id', err);
             user.dummyTimesheetId = undefined;
-            //TODO turn into service
-            UserModel.findOneAsync({dummyTimesheetId: user.description})
-            .then(user => {
+            //Remove the dummy timesheet id from the user
+            return UserModel.findOneAsync({dummyTimesheetId: user.dummyTimesheetId})
+              .then(user => {
                 if(user){
                   user.dummyTimesheetId = undefined;
-                  return user.saveAsync();
+                  return user.saveAsync()
+                    .then(() => {return undefined;});
                 }
                 else {
                   throw new Error('Authenticated user doesn\'t exist?');
                 }
               });
-
-            return undefined;
           });
       }
       else {
@@ -99,17 +96,8 @@ export function getDummyTimesheet(user){
 
                       let dummyTimesheetId = timesheets[timesheets.length - 1].id;
 
-                      //TODO turn into service
-                      UserModel.findOneAsync({email: user.email})
-                        .then(user => {
-                          if(user){
-                            user.dummyTimesheetId = dummyTimesheetId;
-                            return user.saveAsync();
-                          }
-                          else { throw new Error('Authenticated user doesn\'t exist?'); }
-                        });
-
                       return _getRawTimesheetEditResponse(user, dummyTimesheetId);
+
                     });
                 });
             }
@@ -121,6 +109,28 @@ export function getDummyTimesheet(user){
     })
     .then(([response, body]) => {
       return parseTimesheetFromEditResponse(body);
+    })
+    .then(dummyTimesheet => {
+
+      if( ! user.dummyTimesheetId){
+        //Save the dummyTimesheetId to the user
+        return UserModel.findOneAsync({email: user.email})
+          .then(user => {
+            if(user){
+              console.log('Saving dummySheetId to user', user.email, dummyTimesheet.id);
+              user.dummyTimesheetId = dummyTimesheet.id;
+              return user.saveAsync()
+                .then(() => {
+                  return dummyTimesheet;
+                });
+            }
+            else { throw new Error('Authenticated user doesn\'t exist?'); }
+          });
+      }
+      else {
+        return dummyTimesheet;
+      }
+
     });
 
 }

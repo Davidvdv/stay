@@ -4,46 +4,50 @@ import moment from 'moment';
 import _ from 'lodash';
 import Promise from 'bluebird';
 import * as projectYats from './project.service.yats.js';
+import * as timesheetLocalService from '../timesheet-service/timesheet.service.local.js';
 
 
-export function omniSearch(user, query = ''){
-  //TODO index / keep these in memory?
-  return getClients(user)
-    .then(clients => {
-
-      return Promise.all(_(clients.clients).map(client => {
-        return searchProjects(user, client.id);
-      }).value())
-        .then(projects => {
-
-          clients.clients = _(clients.clients).map((client, index) => {
-            client.projects = projects[index];
-            return client;
-          }).value();
-
-          console.log('clients', clients);
-          return clients;
-
-        });
-
-    });
-}
 
 export function getOmniProjectsObject(user){
-  return getClients(user)
-    .then(clients => {
 
-      return Promise.all(_(clients.clients).map(client => {
-        return searchProjects(user, client.id);
-      }).value())
-        .then(projects => {
+  return Promise.resolve()
+  .then(() => {
+
+      if( ! user.dummyTimesheetId ) {
+        return timesheetLocalService.getDummyTimesheet(user)
+          .then(() => {
+            return getClients(user);
+          })
+      }
+      else {
+        return getClients(user);
+      }
+
+    })
+    .then((clients = {}) => {
+
+      clients = clients.toObject ? clients.toObject() : clients;
+
+      console.log('Get omni project object clients', typeof clients.clients, clients.clients && clients.clients.length);
+
+      //Fetch the first project first before gunning ahead with a ton of requests
+      return searchProjects(user, _.first(clients.clients).id)
+        .then(() => {
+          return Promise.all(_(clients.clients).map(client => {
+            return searchProjects(user, client.id);
+          }).value());
+        })
+        .then((projects = {}) => {
+
+          projects = projects.toObject ? projects.toObject() : projects;
+
+          console.log('Get omni projects objects projects', typeof projects, typeof projects.projects, clients.clients.length, projects.length);
 
           clients.clients = _(clients.clients).map((client, index) => {
             client.projects = projects[index];
             return client;
           }).value();
-
-          console.log('clients', clients);
+          
           return clients;
         });
     });
@@ -59,28 +63,6 @@ export function searchProjects(user, clientId){
 
 
 export function getClients(user){
-  return projectYats.getClientsFromTimesheet(user)
-    .then(clients => {
-      //Ensure all clients are cached
-      cacheClients(user,  clients);
-      return clients;
-    });
+  return projectYats.getClientsFromTimesheet(user);
 
-}
-
-
-//TODO turn this into a seed script
-function cacheClients(user, clients){
-
-  return;
-
-  console.log('Caching clients', clients && clients.clients && clients.clients.length);
-  _.forEach(clients.clients, (client, index) => {
-    ((index) => {
-      setTimeout(() => {
-        console.log(`Caching client ${client.id} - ${index}/${clients.clients.length}`);
-        searchProjects(user, client.id);
-      }, (index + 0.5) * 100);
-    })(index);
-  });
 }
