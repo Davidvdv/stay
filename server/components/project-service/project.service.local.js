@@ -47,7 +47,7 @@ export function getOmniProjectsObject(user){
             client.projects = projects[index];
             return client;
           }).value();
-          
+
           return clients;
         });
     });
