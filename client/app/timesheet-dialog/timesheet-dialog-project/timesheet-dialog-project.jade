@@ -6,34 +6,18 @@ md-dialog.dialog.timesheet-dialog-project
 
     md-content(flex layout='row')
 
+      md-autocomplete.omni-autocomplete(ng-disabled='isDisabled', md-no-cache='noCache', md-selected-item='selectedOmniItem',
+        md-search-text-change='searchOmniTextChange(searchOmniText)', md-search-text='searchOmniText', md-autoselect='true'
+        md-selected-item-change='selectedOmniItemChange(omniItem)', md-items='omniItem in omniSearch(searchOmniText)',
+        md-item-text='omniItem.display', md-min-length='0', placeholder='Enter the omni name', md-match-case-insensitive='true')
+          md-item-template
+            span(md-highlight-text='searchOmniText', md-highlight-flags='^i') {{omniItem.clientName}} {{omniItem.projectName}}
+          md-not-found
+            | No projects matching "{{searchOmniText}}" were found.
 
-      md-autocomplete.client-autocomplete(ng-disabled='isDisabled', md-autofocus="false" md-no-cache='noCache', md-selected-item='selectedClientItem',
-      md-search-text-change='searchClientTextChange(searchClientsText)', md-search-text='searchClientsText', md-autoselect='true'
-      md-selected-item-change='selectedClientItemChange(clientItem)', md-items='clientItem in searchClients(searchClientsText)',
-      md-item-text='clientItem.name', md-min-length='0', placeholder='Enter the client name', md-match-case-insensitive='true')
-
-        md-item-template
-          span(md-highlight-text='searchClientsText', md-highlight-flags='^i') {{clientItem.name}}
-        md-not-found
-          | No clients matching "{{searchClientsText}}" were found.
-
-
-
-      md-autocomplete.project-autocomplete(ng-disabled='isDisabled || ! selectedClientItem', md-no-cache='noCache', md-selected-item='selectedProjectItem',
-      md-search-text-change='searchProjectTextChange(searchProjectsText)', md-search-text='searchProjectsText', md-autoselect='true'
-      md-selected-item-change='selectedProjectItemChange(projectItem)', md-items='projectItem in searchProjects(selectedClientItem, searchProjectsText)',
-      md-item-text='projectItem.name', md-min-length='0', placeholder='Enter the project name', md-match-case-insensitive='true')
-
-        md-item-template
-          span(md-highlight-text='searchProjectsText', md-highlight-flags='^i') {{projectItem.name}}
-        md-not-found
-          | No projects matching "{{searchProjectsText}}" were found.
-
-      md-button.add-project-button.md-raised(ng-click='complete($event, selectedClientItem, selectedProjectItem)') Add
-
+      md-button.add-project-button.md-raised(ng-click='completeOmni($event, selectedOmniItem)') Add
 
     md-divider
-
 
     md-content(flex layout='column')
 
@@ -49,8 +33,4 @@ md-dialog.dialog.timesheet-dialog-project
           div(flex layout='column')
             h4 {{commonProject.projectName}}
             em {{commonProject.clientName}}
-
-
-
-
 

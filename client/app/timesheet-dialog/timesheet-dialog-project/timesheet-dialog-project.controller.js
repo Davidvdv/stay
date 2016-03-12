@@ -11,10 +11,12 @@ angular.module('stayApp')
     function init(){
 
       $scope.complete = complete;
+      $scope.completeOmni = completeOmni;
       $scope.selectedClientItemChange = selectedClientItemChange;
       $scope.closeDialog = closeDialog;
       $scope.searchProjects = Projects.searchProjects;
       $scope.searchClients = Projects.searchClients;
+      $scope.omniSearch = Projects.omniSearch;
       $scope.selectCommon = selectCommon;
       $scope.getAvatarClientName = getAvatarClientName;
 
@@ -43,6 +45,11 @@ angular.module('stayApp')
     function selectedClientItemChange(clientItem){
       $scope.searchProjectsText = '';
       return $scope.searchProjects(clientItem, '');
+    }
+
+    function completeOmni($event, omniItem = {}){
+      $log.debug('completeOmni', omniItem);
+      return complete($event, {id: omniItem.clientId, name: omniItem.clientName}, {id: omniItem.projectId, name: omniItem.projectName});
     }
 
     function complete($event, clientItem = {}, projectItem = {}){

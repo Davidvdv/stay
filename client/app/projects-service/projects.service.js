@@ -5,7 +5,8 @@ angular.module('stayApp')
 
 
     this.projects = $localStorage.projects = $window.projects || $localStorage.projects || undefined;
-
+    this.projectsIndex = undefined;
+    this.projectsStore = {};
 
     //TODO namespace with user
     this.commonProjects = $localStorage.commonProjects = $window.commonProjects || $localStorage.commonProjects || [];
@@ -28,6 +29,50 @@ angular.module('stayApp')
           $log.error(err);
         });
     };
+
+    this.getProjectsIndex = () => {
+      return this.projectsIndex ? $q.when(this.projectsIndex) : this.getProjects()
+        .then(projects => {
+          return _(projects.clients).map(client => {
+            let projects = client.projects || [{id: '', name: ''}];
+            return _(projects).map(project => {
+              return {
+                clientName: client.name,
+                clientId: client.id,
+                projectName: project.name,
+                projectId: project.id,
+                display: `${client.name} ${project.name}`.trim(),
+                id: client.id + project.id
+              };
+            }).value();
+          }).flatten().value();
+        })
+        .then(projectsFlattened => {
+
+          var idx = lunr(function() {
+            this.ref('id');
+            this.field('clientName');
+            this.field('projectName');
+            this.field('display');
+          });
+
+          idx.pipeline.add(
+            lunr.trimmer,
+            lunr.stopWordFilter,
+            lunr.stemmer
+          );
+
+          _.forEach(projectsFlattened, (flattenedProject) => {
+            idx.add(flattenedProject);
+            this.projectsStore[flattenedProject.id] = flattenedProject;
+          });
+
+          this.projectsIndex = idx;
+
+          return this.getProjectsIndex();
+        });
+    };
+
 
     this.addCommon = (clientName, projectName) => {
       var exists = _(this.commonProjects).filter(project => {
@@ -62,6 +107,17 @@ angular.module('stayApp')
         .then(projects => {
           return _(projects.clients).filter(client => {
             return client.name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+          }).value();
+        });
+    };
+
+
+    this.omniSearch = (query = '') => {
+      return this.getProjectsIndex()
+        .then(projectsIndex => {
+
+          return _(projectsIndex.search(query)).map(result => {
+            return this.projectsStore[result.ref];
           }).value();
         });
     };
