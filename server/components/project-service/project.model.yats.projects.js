@@ -10,8 +10,7 @@ var ProjectYatsSchema = new mongoose.Schema({
   projects: [{
     id: String,
     name: String
-  }],
-  body: String
+  }]
 },
 {
   timestamps: true

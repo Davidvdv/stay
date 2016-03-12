@@ -22,28 +22,25 @@ export function searchProjects(user, clientId, editTimesheet){
     .then(cachedProjects => {
 
       if(cachedProjects){
-        console.log('YATS search projects found cache', clientId, cachedProjects.projects);
-        return [undefined, cachedProjects.body];
+        console.log('YATS search projects found cache', clientId, cachedProjects.projects.length);
+        return cachedProjects.projects;
       }
       else {
         console.log('YATS search projects no cache', clientId);
         return timesheetService.getDummyTimesheet(user)
           .then(editTimesheet => {
             return _getRawSearchProjects(user, clientId, editTimesheet);
+          })
+          .then(([response, body]) => {
+            let projects = parseProjectsFromResponse(body);
+
+            ProjectYatsProjectsModel.createAsync({
+              clientId: clientId,
+              projects
+            });
+            return projects;
           });
       }
-    })
-    .then(([response, body]) => {
-
-      let projects = parseProjectsFromResponse(body);
-
-      ProjectYatsProjectsModel.createAsync({
-        clientId: clientId,
-        body,
-        projects
-      });
-
-      return projects;
     });
 }
 
@@ -64,22 +61,20 @@ export function getClientsFromTimesheet(user){
         .then(clientsResponse => {
           if( ! clientsResponse){
             return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/edit/${dummyTimesheetId}`)
+            .then(([response, body]) => {
+                let clients = parseClientsFromResponse(body);
+
+                ProjectYatsClientsModel.createAsync({
+                  timesheetId: dummyTimesheetId,
+                  clients
+                });
+
+                return _.merge(clients, { timesheetId: dummyTimesheetId });
+              });
           }
           else {
-            return [undefined, clientsResponse.body];
+            return _.merge(clientsResponse.clients, { timesheetId: dummyTimesheetId });
           }
-        })
-        .then(([response, body]) => {
-
-          let clients = parseClientsFromResponse(body);
-
-          ProjectYatsClientsModel.createAsync({
-            timesheetId: dummyTimesheetId,
-            body,
-            clients
-          });
-
-          return _.merge(clients, { timesheetId: dummyTimesheetId });
         });
     });
 }

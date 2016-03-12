@@ -24,7 +24,7 @@ angular.module('stayApp')
           this.projects = response.data;
           $localStorage.projects = response.data;
         })
-        .then(this.getOmniProjectsObject)
+        .then(this.getProjects)
         .catch(err => {
           $log.error(err);
         });

@@ -10,8 +10,7 @@ var ProjectClientsYatsSchema = new mongoose.Schema({
   clients: [{
     id: String,
     name: String
-  }],
-  body: String
+  }]
 },
 {
   timestamps: true
