@@ -13,11 +13,11 @@ import seed from './config/seed.js';
 
 
 
-
+//exports = module.exports =
 // Expose app
-exports = module.exports = (() => {
+(() => {
 
-// Connect to MongoDB
+  // Connect to MongoDB
   mongoose.connect(config.mongo.uri, config.mongo.options);
   mongoose.connection.on('error', function(err) {
     console.error('MongoDB connection error: ' + err);
@@ -25,7 +25,7 @@ exports = module.exports = (() => {
   });
 
 
-// Populate databases with sample data
+  // Populate databases with sample data
   return seed()
     .then(() => {
 
