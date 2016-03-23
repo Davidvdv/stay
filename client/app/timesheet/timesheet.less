@@ -18,6 +18,19 @@
   align-items: flex-end;
 }
 
+.task-total-input,
+.task-day-input {
+  input {
+    transition: opacity 200ms ease;
+  }
+
+  &.is-zero,
+  &:focus {
+    input {
+      opacity: 0.4;
+    }
+  }
+}
 
 .task-menu-input,
 .task-total-input,

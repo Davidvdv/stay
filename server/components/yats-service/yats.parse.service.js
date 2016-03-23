@@ -21,3 +21,5 @@ export function parseViewTableRows($, $table){
 
   return rows;
 }
+
+

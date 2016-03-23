@@ -71,18 +71,25 @@ function getProjectsSeeds(){
           else {
             console.log('projects files', files.length);
             return Promise.all(_(files).map(file => {
-              let projects = require(file);
+              try {
+                let projects = require(file);
 
-              if(file.indexOf('project.model.yats.projects') === -1 ){
-                return;
+                if(file.indexOf('project.model.yats.projects') === -1 ){
+                  return;
+                }
+
+                console.log('creating project seed', projects.clientId, projects.projects && projects.projects.length);
+
+                delete projects._id;
+                delete projects.__v;
+                delete projects.createdAt;
+                delete projects.updatedAt;
+                return ProjectYatsProjectsModel.createAsync(projects);
+              }
+              catch(err){
+                console.error('Error parsing file', err);
               }
 
-              console.log('creating project seed', projects.clientId, projects.projects.length);
-              delete projects._id;
-              delete projects.__v;
-              delete projects.createdAt;
-              delete projects.updatedAt;
-              return ProjectYatsProjectsModel.createAsync(projects);
             }).filter().value())
               .then(projects => {
                 console.log('Created projects x', projects.length);

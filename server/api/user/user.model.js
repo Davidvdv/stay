@@ -18,9 +18,11 @@ var UserSchema = new Schema({
 
   //Need these things anywhere
   dummyTimesheetId: String,
+  dummyTimesheetRowId: String,
   ssoCookieKey: String,
   ssoCookieValue: String,
-
+  sessionCookieKey: String,
+  sessionCookieValue: String,
 
   password: String,
   provider: String,

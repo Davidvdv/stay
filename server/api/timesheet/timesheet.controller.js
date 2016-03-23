@@ -36,8 +36,6 @@ export function getTimesheets(req, res) {
     });
 }
 
-
-
 export function getTimesheet(req, res) {
   console.log('getting timesheet', req.params.id);
 
@@ -49,15 +47,37 @@ export function getTimesheet(req, res) {
       return res.json(timesheet)
     })
     .catch(err => {
-      console.error('Error getting timesheet', err);
-      return res.sendStatus(500);
+
+      console.log(err);
+
+      if(err.toString().indexOf('Error: Timesheet not found') !== -1){
+        return res.sendStatus(404);
+      }
+      else{
+        console.error('Error getting timesheet', err);
+        return res.sendStatus(500);
+      }
+
     });
 
 }
 
+export function saveTimesheet(req, res){
+  console.log('saving timesheet', req.params.id);
 
-function getSaveTimesheetFormData(timesheet){
-  return _(timesheet.rows).map(row => {
-    return getSaveRowFormData(row);
-  }).value().join('&');
+  if( ! req.user.ssoCookieKey){ return res.sendStatus(401); }
+  if( ! req.params.id){ return res.sendStatus(400); }
+
+  //TODO validate req.body
+
+  return timesheetService.saveTimesheet(req.user, req.params.id, req.body)
+    .then(timesheet => {
+      return res.json(timesheet)
+    })
+    .catch(err => {
+      console.error('Error saving timesheet', err);
+      return res.sendStatus(500);
+    });
 }
+
+

@@ -33,8 +33,11 @@ export function getOmniProjectsObject(user){
       //Fetch the first project first before gunning ahead with a ton of requests
       return searchProjects(user, _.first(clients.clients).id)
         .then(() => {
-          return Promise.all(_(clients.clients).map(client => {
-            return searchProjects(user, client.id);
+          return Promise.all(_(clients.clients).map((client, index) => {
+            return delay(index * 0)
+              .then(() => {
+                return searchProjects(user, client.id);
+              });
           }).value());
         })
         .then((projects = {}) => {
@@ -53,11 +56,12 @@ export function getOmniProjectsObject(user){
     });
 }
 
+
+
 export function searchProjects(user, clientId){
 
   if( ! clientId ){ return Promise.reject(new Error('No client id passed to project.service.local:searchProjects(user, clientId)')); }
 
-  console.log('Searching local projects', clientId);
   return projectYats.searchProjects(user, clientId);
 }
 
@@ -66,3 +70,8 @@ export function getClients(user){
   return projectYats.getClientsFromTimesheet(user);
 
 }
+
+function delay(ms = 100){
+  return new Promise(resolve => {setTimeout(resolve, ms)});
+}
+

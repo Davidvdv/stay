@@ -1,12 +1,26 @@
 
-
+navbar,
 .navbar {
   md-menu {
     margin: inherit;
   }
-}
-
-
-navbar {
   min-height: 64px;
+  md-content {
+    background: transparent;
+  }
+
+  .save-button {
+    md-progress-circular {
+      .md-left .md-half-circle  {
+        border-top-color: white;
+        border-left-color: white;
+      }
+      .md-right .md-half-circle  {
+        border-top-color: white;
+        border-right-color: white;
+      }
+    }
+  }
 }
+
+

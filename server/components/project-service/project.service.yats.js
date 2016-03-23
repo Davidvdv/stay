@@ -14,51 +14,82 @@ var jsonfile = require('bluebird').promisifyAll(require('jsonfile'));
 
 
 
-export function searchProjects(user, clientId){
+export function searchProjects(user, clientId, options = {}){
 
   console.log('YATS search projects', typeof clientId, clientId);
 
-  return ProjectYatsProjectsModel.findOneAsync({ clientId: clientId })
-    .then(cachedProjects => {
+  return Promise.resolve()
+    .then(() => {
 
-      if(cachedProjects){
-        console.log('YATS search projects found cache', clientId, cachedProjects.projects.length);
+      return ProjectYatsProjectsModel.findOneAsync({ clientId: clientId })
+        .then(cachedProjects => {
 
-        return cachedProjects.projects;
-      }
-      else {
-        //TODO we need to limit this to make sure we dont just fire off ~300 requests
-        //Ensure we have the latest user object
-        return UserModel.findOneAsync({ email: user.email })
-          .then(user => {
+          if(cachedProjects){
+            console.log('YATS search projects found cache', clientId, cachedProjects.projects.length);
 
-            console.log('YATS search projects no cache', clientId, user.dummyTimesheetId);
+            return cachedProjects.projects;
+          }
+          else {
+            //TODO we need to limit this to make sure we dont just fire off ~300 requests
+            //Ensure we have the latest user object
+            return UserModel.findOneAsync({ email: user.email })
+              .then(user => {
 
-            return timesheetService.getDummyTimesheet(user)
-              .then(editTimesheet => {
-                return _getRawSearchProjects(user, clientId, editTimesheet);
-              })
-              .then(([response, body]) => {
 
-                let projects = {
-                  clientId,
-                  projects: parseProjectsFromResponse(body)
-                };
+                //TODO cache dummy timesheet row id?
+                //TODO abstract get dummyTimesheetId and dummyTimesheetRowId
+                console.log('YATS search projects no cache', clientId, user.dummyTimesheetId);
 
-                ProjectYatsProjectsModel.createAsync(projects);
-                jsonfile.writeFileAsync(__dirname + `/../../config/seed/project.model.yats.projects.${clientId}.json`, projects);
+                return timesheetService.getDummyTimesheet(user)
+                  .then(editTimesheet => {
+                    return _getRawSearchProjects(user, clientId, editTimesheet)
+                      .then(([response, body]) => {
 
-                return projects.projects;
+                        let projects = {
+                          clientId,
+                          projects: parseProjectsFromResponse(body)
+                        };
+
+                        let taskPromises = _(projects.projects).map((project, index) => {
+                          return delay(index * 0).then(() => {
+                            return getTasks(user, clientId, project.id, editTimesheet)
+                              .then(tasks => {
+                                return _.merge(project, tasks);
+                              });
+                          })
+                        }).value();
+
+                        return Promise.all(taskPromises)
+                          .then(() => {
+
+                            setTimeout(() => {
+                              jsonfile.writeFileAsync(__dirname + `/../../config/seed/project.model.yats.projects.${clientId}.json`, projects);
+                              return ProjectYatsProjectsModel.findOneAsync({clientId: projects.clientId})
+                                .then(cachedProject => {
+                                  if( ! cachedProject){
+                                    return ProjectYatsProjectsModel.createAsync(projects).catch(err => {});
+                                  }
+                                });
+                            });
+
+                            return projects.projects;
+                          });
+                      });
+                  });
               });
-          });
-      }
+          }
+        });
     });
+
 }
+
 
 export function getClientsFromTimesheet(user){
 
   return UserModel.findOneAsync({_id: user._id})
   .then(user => {
+
+      //TODO abstract dummyTimesheetId and dummyTimesheetRowId
       return Promise.resolve()
         .then(() => {
           if( user.dummyTimesheetId){
@@ -70,8 +101,10 @@ export function getClientsFromTimesheet(user){
           }
         })
         .then(dummyTimesheetId => {
+
           return ProjectYatsClientsModel.findOneAsync({ timesheetId: dummyTimesheetId })
             .then(clientsResponse => {
+
               if( ! clientsResponse){
                 return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/edit/${dummyTimesheetId}`)
                   .then(([response, body]) => {
@@ -80,8 +113,15 @@ export function getClientsFromTimesheet(user){
                     console.log('Saving clients to cache', dummyTimesheetId, clients);
                     _.merge(clients, { timesheetId: dummyTimesheetId });
 
-                    ProjectYatsClientsModel.createAsync(clients);
-                    jsonfile.writeFileAsync(__dirname + `/../../config/seed/project.model.yats.clients.${dummyTimesheetId}.json`, clients);
+                    setTimeout(() => {
+                      jsonfile.writeFileAsync(__dirname + `/../../config/seed/project.model.yats.clients.${dummyTimesheetId}.json`, clients);
+                      return ProjectYatsClientsModel.findOneAsync({timesheetId: clients.timesheetId})
+                        .then(cachedClient => {
+                          if( ! cachedClient){
+                            return ProjectYatsClientsModel.createAsync(clients).catch(err => {});
+                          }
+                        });
+                    });
 
                     return clients;
                   });
@@ -97,6 +137,56 @@ export function getClientsFromTimesheet(user){
 }
 
 
+function getTasks(user, clientId, projectId, editTimesheet){
+
+  //TODO handle no passed editTimesheet and expose/export
+
+  return _getRawTasks(user, clientId, projectId, editTimesheet)
+    .then(([response, body]) => {
+
+      let projects = parseProjectsFromResponse(body);
+      let validateProjectId = _(projects).filter(project => {
+          return (project.id && project.id.toString()) === (projectId && projectId.toString());
+        }).value();
+
+      //assert that the project id is in this response
+      if( ! validateProjectId || validateProjectId.length === 0 ){
+        console.error('Trying to get tasks returned a response that did not include the original project id', projects, validateProjectId);
+        throw new Error('Project id was invalid for client id ' + clientId);
+      }
+
+      return parseTasksFromResponse(body);
+    });
+}
+
+function delay(ms = 100){
+  return new Promise(resolve => {setTimeout(resolve, ms)});
+}
+
+
+function parseTasksFromResponse(body){
+
+  const $ = cheerio.load(body);
+
+  let $tasks = $('tasks');
+  let $activities = $('activity_types');
+
+  let tasks = _(yatsParse.parseViewTableRows($, $tasks)).map($element => {
+    return {
+      name: $element.html().trim().replace('<!--[CDATA[', '').replace(']]-->', ''),
+      id: $($element.get(0)).attr('value')
+    };
+  }).filter(task => {return !! task.id && !! task.id.trim()}).value();
+
+  let activities = _(yatsParse.parseViewTableRows($, $activities)).map($element => {
+    return {
+      name: $element.html().trim().replace('<!--[CDATA[', '').replace(']]-->', ''),
+      id: $($element.get(0)).attr('value')
+    };
+  }).filter(activity => {return !! activity.id && !! activity.id.trim()}).value();
+
+  return { tasks, activities };
+}
 
 function parseProjectsFromResponse(body){
 
@@ -149,6 +239,35 @@ function parseRowIdFromEditResponse(body, rowIndex){
 }
 
 
+function _getRawTasks(user, clientId, projectId, editTimesheet){
+
+  let firstRow = editTimesheet.rows[0];
+
+  firstRow.clientId = clientId;
+  firstRow.projectId = projectId;
+  firstRow.activityId = '';
+  firstRow.taskId = '';
+
+  return yatsService.post(user,
+    `https://yats.solnetsolutions.co.nz/timesheets/update_row_ajax/${firstRow.id}?timesheet_id=${editTimesheet.id}`,
+    yatsService.getProjectQueryRowFormData(firstRow),
+    `_getRawTasks ${clientId} ${projectId}`
+  )
+    .then(([response, body]) => {
+
+      console.log('Successfully got projects', response.statusCode);
+
+      if(body.indexOf('Yats has encountered an unexpected error. Please notify your Systems Administrator.') !== -1){
+        console.error('Failed to _getRawSearchTasks due to yats error');
+        throw new Error('Faied to update row');
+      }
+
+      return [response, body];
+    });
+
+}
+
+
 function _getRawSearchProjects(user, clientId, editTimesheet){
   let firstRow = editTimesheet.rows[0];
 
@@ -159,13 +278,15 @@ function _getRawSearchProjects(user, clientId, editTimesheet){
 
   return yatsService.post(user,
       `https://yats.solnetsolutions.co.nz/timesheets/update_row_and_clear_ajax/${firstRow.id}?timesheet_id=${editTimesheet.id}`,
-      yatsService.getSaveRowFormData(firstRow)
+      yatsService.getProjectQueryRowFormData(firstRow),
+    `_getRawSearchProjects ${clientId}`
     )
     .then(([response, body]) => {
 
       console.log('Successfully got projects', response.statusCode);
 
       if(body.indexOf('Yats has encountered an unexpected error. Please notify your Systems Administrator.') !== -1){
+        console.error('Failed to _getRawSearchProjects due to yats error');
         throw new Error('Faied to update row');
       }
 

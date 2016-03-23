@@ -26,23 +26,78 @@ export function getTimesheet(user, id){
     _getRawTimesheetEditResponse(user, id)
   ])
     .then(([[viewResponse, viewBody], [editResponse, editBody]]) => {
+
+
+      if(viewBody.indexOf('Page Not Found</title>') !== -1){
+        throw new Error('Timesheet not found');
+      }
+
       console.log('Successfully got timesheet', viewResponse.statusCode);
+
       if(editResponse.req.path === '/'){
-        return formatTimesheet(parseTimesheetFromViewResponse(viewBody));
+        return formatTimesheetForClient(parseTimesheetFromViewResponse(viewBody));
       }
       else {
-        return formatTimesheet(parseTimesheetFromEditResponse(editBody));
+        return formatTimesheetForClient(parseTimesheetFromEditResponse(editBody));
       }
     });
 }
 
 
-export function saveTimesheet(user, timesheet){
-  throw new Error('timesheet.service.yats:saveTimesheet unsupported');
+export function saveTimesheet(user, timesheetId, timesheet){
+  return Promise.resolve()
+    .then(() => {
+
+      var yatsTimesheet = formatTimesheetForServer(timesheet);
+
+      //TODO ensure each timesheet row has its own row id - otherwise go and create a new row
+
+      var resolveRowIds = _(yatsTimesheet.rows).map(row => {
+        if( ! row.id){
+          return createTimesheetRow(user, timesheetId)
+          .then(newTimesheetRow => {
+
+              console.log();
+              console.log('newTimesheetRow', newTimesheetRow);
+              console.log();
+
+              return _.merge(row, _.pick(newTimesheetRow, 'id', 'monId', 'tueId', 'wedId', 'thuId', 'friId', 'satId', 'sunId'));
+            });
+        }
+      }).filter().value();
+
+
+      return Promise.all(resolveRowIds)
+        .then(() => {
+
+          console.log('formatted timesheet', yatsTimesheet);
+
+          return _saveTimesheetRaw(user, timesheetId, yatsTimesheet)
+            .then(([response, body]) => {
+              //TODO validate that there are not extra rows that should be deleted
+
+              let savedTimesheet = parseTimesheetFromEditResponse(body);
+
+              //TODO - validate that each tempId is unique - if there are duplicates then something is wrong - not merged correctly by client
+
+              //TODO this is really the responsibility of timesheet.service.local rather than the yats abstraction
+              //Merge our temporary id back into the save result
+              savedTimesheet.rows = _(savedTimesheet.rows).map(row => {
+                row.tempId = (_.find(yatsTimesheet.rows, {id: row.id}) || {}).tempId;
+                return row;
+              }).value();
+
+              console.log('saved timesheet', savedTimesheet);
+
+              return formatTimesheetForClient(savedTimesheet);
+            });
+        });
+
+    });
 }
 
 
-export function completeTimesheet(user, timesheet){
+export function completeTimesheet(user, timesheetId, timesheet){
   throw new Error('timesheet.service.yats:completeTimesheet unsupported');
 }
 
@@ -50,6 +105,21 @@ export function completeTimesheet(user, timesheet){
 export function createTimesheet(user, date){
   //TODO should parse this response
   return _createTimesheetRaw(user, date);
+}
+
+
+export function createTimesheetRow(user, timesheetId){
+  return _createTimesheetRowRaw(user, timesheetId)
+    .then(([response, body]) => {
+
+      console.log('parseCreateTimesheetRowFromResponse', parseCreateTimesheetRowFromResponse(body));
+
+      return parseCreateTimesheetRowFromResponse(body);
+    });
+}
+
+export function deleteTimesheetRow(user, timesheetId, rowId){
+  return _deleteTimesheetRowRaw(user, timesheetId, rowId);
 }
 
 
@@ -130,11 +200,38 @@ export function getDummyTimesheet(user){
       else {
         return dummyTimesheet;
       }
-
     });
 
 }
 
+
+function _saveTimesheetRaw(user, timesheetId, timesheet){
+
+  console.log(yatsService.getSaveTimesheetFormData(timesheet));
+
+  return yatsService.post(user, `https://yats.solnetsolutions.co.nz/timesheets/update/${timesheetId}`, yatsService.getSaveTimesheetFormData(timesheet))
+  .then(([response, body]) => {
+      console.log('_saveTimesheetRaw', response.statusCode);
+      if(body.indexOf('Errors prohibited this timesheet from being saved') !== -1) {
+        //TODO is it possible to ensure we dont try and save an invalid form ???
+        //TODO    required activity/task kinda kills this
+        //throw new Error('Validation error trying to save timesheet');
+        console.error('Validation error trying to save timesheet');
+        return [response, body];
+      }
+      else {
+        return [response, body];
+      }
+    });
+}
+
+function _deleteTimesheetRowRaw(user, timesheetId, rowId){
+  return yatsService.post(user, `https://yats.solnetsolutions.co.nz/timesheets/remove_week_row_ajax/${timesheetId}?task_id=${rowId}`)
+  .then(([response, body]) => {
+      console.log('_deleteTimesheetRowRaw', response.statusCode);
+      return [response, body];
+    });
+}
 
 function _getRawTimesheetsResponse(user, timesheetPage = 1){
   return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/list?page=${timesheetPage}`);
@@ -150,6 +247,9 @@ function _getRawTimesheetEditResponse(user, id){
   return yatsService.get(user, `https://yats.solnetsolutions.co.nz/timesheets/edit/${id}`);
 }
 
+function _createTimesheetRowRaw(user, timesheetId){
+  return yatsService.post(user, `https://yats.solnetsolutions.co.nz/timesheets/create_week_row_ajax/${timesheetId}`);
+}
 
 function _createTimesheetRaw(user, date){
   return yatsService.post(user, `https://yats.solnetsolutions.co.nz/timesheets/create`, `timesheet[end_date]=${date}&commit=Create&warning_flag=`)
@@ -167,7 +267,26 @@ function _createTimesheetRaw(user, date){
 }
 
 
-function formatTimesheet(rawTimesheet){
+function formatTimesheetForServer(timesheet){
+  timesheet.rows = _(timesheet.rows).map((clientValue, clientName) => {
+    return _(clientValue).map((rows, projectName) => {
+      return _(rows).map(row => {
+
+        clientName = clientName === 'CLIENT_UNKNOWN' ? '' : clientName;
+        projectName = projectName === 'PROJECT_UNKNOWN' ? '' : projectName;
+
+        return _.merge({}, row, {client: clientName, project: projectName});
+      }).value();
+    }).flatten().value();
+  }).flatten().value();
+
+  //TODO push total row
+
+  return timesheet;
+}
+
+
+function formatTimesheetForClient(rawTimesheet){
 
   return _(rawTimesheet.rows).reduce((result, row) => {
 
@@ -211,148 +330,229 @@ function parseTimesheetIdFromEditResponse(body){
 
 
 function parseTimesheetIdFromViewResponse(body){
-  const $ = cheerio.load(body);
+  try {
+    const $ = cheerio.load(body);
 
-  var $editLink = $($('#main a').get(0));
+    var $editLink = $($('#main a').get(0));
 
-  if($editLink.text() === 'Edit'){
-    var href = $editLink.attr('href') || '';
-    return _.last(href.split('/'));
+    if($editLink.text() === 'Edit'){
+      var href = $editLink.attr('href') || '';
+      return _.last(href.split('/'));
+    }
+    else {
+      return undefined;
+    }
   }
-  else {
-    return undefined;
+  catch(err){
+    console.error('Error parseTimesheetIdFromViewResponse', err);
+    throw err;
   }
 }
+
 
 function parseRowIdFromEditResponse(body, rowIndex){
-  const $ = cheerio.load(body);
-  //TODO should limit to select length
+  try {
+    const $ = cheerio.load(body);
+    //TODO should limit to select length
 
-  let $timesheetEditProjectSelect = $($('#timesheet_rows select').get(rowIndex * 4));
+    let $timesheetEditProjectSelect = $($('#timesheet_rows select').get(rowIndex * 4));
 
-  return ($timesheetEditProjectSelect.attr('id') || '').replace('week_row_', '').replace('_client_id', '');
+    return ($timesheetEditProjectSelect.attr('id') || '').replace('week_row_', '').replace('_client_id', '');
+  }
+  catch(err){
+    console.error('Error parseRowIdFromEditResponse', err);
+    throw err;
+  }
+
 }
 
-function parseDayIdsFromEditResponse(body, index){
-  const $ = cheerio.load(body);
+function parseDayIdsFromEditResponse(body, rowId){
+  try {
+    const $ = cheerio.load(body);
 
-  let rowId = parseRowIdFromEditResponse(body, index);
+    return _($($(`#week_row_${rowId}_key .row_submitted_hrs`))).map((hourElement) => {
+      return hourElement.attribs.id.replace('_submitted_hrs', '').replace('entry_', '');
+    }).filter().value();
+  }
+  catch(err){
+    console.error('Error parseDayIdsFromEditResponse', err);
+    throw err;
+  }
 
-  return _($($(`#week_row_${rowId}_key .row_submitted_hrs`))).map((hourElement) => {
-    return hourElement.attribs.id.replace('_submitted_hrs', '').replace('entry_', '');
-  }).filter().value();
 }
 
 function parseTimesheetFromEditResponse(body){
-  const $ = cheerio.load(body);
+  try {
+    const $ = cheerio.load(body);
 
-  let $timesheetTable = $('#timesheet_rows');
+    let $timesheetTable = $('#timesheet_rows');
 
-  return {
-    id: parseTimesheetIdFromEditResponse(body),
-    rows: _(yatsParse.parseViewTableRows($, $timesheetTable)).map(($element, index) => {
+    return {
+      id: parseTimesheetIdFromEditResponse(body),
+      rows: _(yatsParse.parseViewTableRows($, $timesheetTable)).map(($element, index) => {
 
-      let rowId = parseRowIdFromEditResponse(body, index);
-      let dayHourIds = parseDayIdsFromEditResponse(body, index);
+        let rowId = parseRowIdFromEditResponse(body, index);
+        let dayHourIds = parseDayIdsFromEditResponse(body, rowId);
 
-      return {
-        id: rowId,
-        client: $($element.find(`#week_row_${rowId}_client_id option[selected="selected"]`)).text() || '',
-        clientId: $($element.find(`#week_row_${rowId}_client_id option[selected="selected"]`)).attr('value') || '',
-        project: $($element.find(`#week_row_${rowId}_project_id option[selected="selected"]`)).text() || '',
-        projectId: $($element.find(`#week_row_${rowId}_project_id option[selected="selected"]`)).attr('value') || '',
-        task: $($element.find(`#week_row_${rowId}_task_id option[selected="selected"]`)).text() || '',
-        taskId: $($element.find(`#week_row_${rowId}_task_id option[selected="selected"]`)).attr('value') || '',
-        activity: $($element.find(`#week_row_${rowId}_activity_type_id option[selected="selected"]`)).text() || '',
-        activityId: $($element.find(`#week_row_${rowId}_activity_type_id option[selected="selected"]`)).attr('value') || '',
-        description: $($element.find(`#week_row_${rowId}_description`)).attr('value') || '',
-        clientReference: $($element.find(`#week_row_${rowId}_client_ref_number`)).attr('value') || '',
-        ontrack: $($element.find(`#week_row_${rowId}_internal_ref_number`)).attr('value') || '',
-        mon: parseInt($($element.find(`#entry_${dayHourIds[0]}_submitted_hrs`)).attr('value') || 0),
-        monId: dayHourIds[0],
-        tue: parseInt($($element.find(`#entry_${dayHourIds[1]}_submitted_hrs`)).attr('value') || 0),
-        tueId: dayHourIds[1],
-        wed: parseInt($($element.find(`#entry_${dayHourIds[2]}_submitted_hrs`)).attr('value') || 0),
-        wedId: dayHourIds[2],
-        thu: parseInt($($element.find(`#entry_${dayHourIds[3]}_submitted_hrs`)).attr('value') || 0),
-        thuId: dayHourIds[3],
-        fri: parseInt($($element.find(`#entry_${dayHourIds[4]}_submitted_hrs`)).attr('value') || 0),
-        friId: dayHourIds[4],
-        sat: parseInt($($element.find(`#entry_${dayHourIds[5]}_submitted_hrs`)).attr('value') || 0),
-        satId: dayHourIds[5],
-        sun: parseInt($($element.find(`#entry_${dayHourIds[6]}_submitted_hrs`)).attr('value') || 0),
-        sunId: dayHourIds[6],
-        total: parseInt($($element.find(`#week_row_${rowId}_submitted_hrs_week_total`)).attr('value') || 0),
-        status: 'Created',
-        authoriser: ''
-      };
+        return {
+          id: rowId,
+          client: $($element.find(`#week_row_${rowId}_client_id option[selected="selected"]`)).text() || '',
+          clientId: $($element.find(`#week_row_${rowId}_client_id option[selected="selected"]`)).attr('value') || '',
+          project: $($element.find(`#week_row_${rowId}_project_id option[selected="selected"]`)).text() || '',
+          projectId: $($element.find(`#week_row_${rowId}_project_id option[selected="selected"]`)).attr('value') || '',
+          //task: $($element.find(`#week_row_${rowId}_task_id option[selected="selected"]`)).text() || '',
+          taskId: $($element.find(`#week_row_${rowId}_task_id option[selected="selected"]`)).attr('value') || '',
+          //activity: $($element.find(`#week_row_${rowId}_activity_type_id option[selected="selected"]`)).text() || '',
+          activityId: $($element.find(`#week_row_${rowId}_activity_type_id option[selected="selected"]`)).attr('value') || '',
+          description: $($element.find(`#week_row_${rowId}_description`)).attr('value') || '',
+          clientReference: $($element.find(`#week_row_${rowId}_client_ref_number`)).attr('value') || '',
+          ontrack: $($element.find(`#week_row_${rowId}_internal_ref_number`)).attr('value') || '',
+          mon: parseInt($($element.find(`#entry_${dayHourIds[0]}_submitted_hrs`)).attr('value') || 0),
+          monId: dayHourIds[0],
+          tue: parseInt($($element.find(`#entry_${dayHourIds[1]}_submitted_hrs`)).attr('value') || 0),
+          tueId: dayHourIds[1],
+          wed: parseInt($($element.find(`#entry_${dayHourIds[2]}_submitted_hrs`)).attr('value') || 0),
+          wedId: dayHourIds[2],
+          thu: parseInt($($element.find(`#entry_${dayHourIds[3]}_submitted_hrs`)).attr('value') || 0),
+          thuId: dayHourIds[3],
+          fri: parseInt($($element.find(`#entry_${dayHourIds[4]}_submitted_hrs`)).attr('value') || 0),
+          friId: dayHourIds[4],
+          sat: parseInt($($element.find(`#entry_${dayHourIds[5]}_submitted_hrs`)).attr('value') || 0),
+          satId: dayHourIds[5],
+          sun: parseInt($($element.find(`#entry_${dayHourIds[6]}_submitted_hrs`)).attr('value') || 0),
+          sunId: dayHourIds[6],
+          total: parseInt($($element.find(`#week_row_${rowId}_submitted_hrs_week_total`)).attr('value') || 0),
+          status: 'Created',
+          authoriser: ''
+        };
 
-    }).value()
-  };
+      }).value()
+    };
+  }
+  catch(err){
+    console.error('Error parseTimesheetFromEditResponse', err);
+    throw err;
+  }
 
 }
 
 function parseTimesheetFromViewResponse(body) {
-  const $ = cheerio.load(body);
+  try {
+    const $ = cheerio.load(body);
 
-  let $timesheetTable = $($('#main > table').get(1));
+    let $timesheetTable = $($('#main > table').get(1));
 
-  return {
-    id: parseTimesheetIdFromViewResponse(body),
-    rows: _(yatsParse.parseViewTableRows($, $timesheetTable)).map($element => {
-      return {
-        client: getColumnText($, $element, 0),
-        project: getColumnText($, $element, 1),
-        task: getColumnText($, $element, 2),
-        activity: getColumnText($, $element, 3),
-        description: getColumnText($, $element, 4),
-        clientReference: getColumnText($, $element, 5),
-        ontrack: getColumnText($, $element, 6),
-        mon: getColumnNumber($, $element, 7),
-        tue: getColumnNumber($, $element, 8),
-        wed: getColumnNumber($, $element, 9),
-        thu: getColumnNumber($, $element, 10),
-        fri: getColumnNumber($, $element, 11),
-        sat: getColumnNumber($, $element, 12),
-        sun: getColumnNumber($, $element, 13),
-        total: getColumnNumber($, $element, 14),
-        status: getColumnText($, $element, 15),
-        authoriser: getColumnText($, $element, 16),
-      };
-    }).value()
-  };
+    return {
+      id: parseTimesheetIdFromViewResponse(body),
+      rows: _(yatsParse.parseViewTableRows($, $timesheetTable)).map($element => {
+        return {
+          client: getColumnText($, $element, 0),
+          project: getColumnText($, $element, 1),
+          task: getColumnText($, $element, 2),
+          activity: getColumnText($, $element, 3),
+          description: getColumnText($, $element, 4),
+          clientReference: getColumnText($, $element, 5),
+          ontrack: getColumnText($, $element, 6),
+          mon: getColumnNumber($, $element, 7),
+          tue: getColumnNumber($, $element, 8),
+          wed: getColumnNumber($, $element, 9),
+          thu: getColumnNumber($, $element, 10),
+          fri: getColumnNumber($, $element, 11),
+          sat: getColumnNumber($, $element, 12),
+          sun: getColumnNumber($, $element, 13),
+          total: getColumnNumber($, $element, 14),
+          status: getColumnText($, $element, 15),
+          authoriser: getColumnText($, $element, 16)
+        };
+      }).value()
+    };
+  }
+  catch(err){
+    console.error('Error parseTimesheetFromViewResponse', err);
+    throw err;
+  }
 
 }
 
+function parseCreateTimesheetRowFromResponse(body){
+  try {
+    const $ = cheerio.load(body);
+
+    var rowId = $('#week_row_id').attr('value');
+    let dayHourIds = parseDayIdsFromEditResponse(body, rowId);
+
+    let $element = $($('tr').get(0));
+
+    return {
+      id: rowId,
+      client: $($element.find(`#week_row_${rowId}_client_id option[selected="selected"]`)).text() || '',
+      clientId: $($element.find(`#week_row_${rowId}_client_id option[selected="selected"]`)).attr('value') || '',
+      project: $($element.find(`#week_row_${rowId}_project_id option[selected="selected"]`)).text() || '',
+      projectId: $($element.find(`#week_row_${rowId}_project_id option[selected="selected"]`)).attr('value') || '',
+      //task: $($element.find(`#week_row_${rowId}_task_id option[selected="selected"]`)).text() || '',
+      taskId: $($element.find(`#week_row_${rowId}_task_id option[selected="selected"]`)).attr('value') || '',
+      //activity: $($element.find(`#week_row_${rowId}_activity_type_id option[selected="selected"]`)).text() || '',
+      activityId: $($element.find(`#week_row_${rowId}_activity_type_id option[selected="selected"]`)).attr('value') || '',
+      description: $($element.find(`#week_row_${rowId}_description`)).attr('value') || '',
+      clientReference: $($element.find(`#week_row_${rowId}_client_ref_number`)).attr('value') || '',
+      ontrack: $($element.find(`#week_row_${rowId}_internal_ref_number`)).attr('value') || '',
+      mon: parseInt($($element.find(`#entry_${dayHourIds[0]}_submitted_hrs`)).attr('value') || 0),
+      monId: dayHourIds[0],
+      tue: parseInt($($element.find(`#entry_${dayHourIds[1]}_submitted_hrs`)).attr('value') || 0),
+      tueId: dayHourIds[1],
+      wed: parseInt($($element.find(`#entry_${dayHourIds[2]}_submitted_hrs`)).attr('value') || 0),
+      wedId: dayHourIds[2],
+      thu: parseInt($($element.find(`#entry_${dayHourIds[3]}_submitted_hrs`)).attr('value') || 0),
+      thuId: dayHourIds[3],
+      fri: parseInt($($element.find(`#entry_${dayHourIds[4]}_submitted_hrs`)).attr('value') || 0),
+      friId: dayHourIds[4],
+      sat: parseInt($($element.find(`#entry_${dayHourIds[5]}_submitted_hrs`)).attr('value') || 0),
+      satId: dayHourIds[5],
+      sun: parseInt($($element.find(`#entry_${dayHourIds[6]}_submitted_hrs`)).attr('value') || 0),
+      sunId: dayHourIds[6],
+      total: parseInt($($element.find(`#week_row_${rowId}_submitted_hrs_week_total`)).attr('value') || 0),
+      status: 'Created',
+      authoriser: ''
+    };
+
+  }
+  catch(err){
+    console.error('Error parseCreateTimesheetRowFromResponse', err);
+    throw err;
+  }
+}
 
 function parseTimesheetsFromResponse(body){
+  try {
+    const $ = cheerio.load(body);
 
-  const $ = cheerio.load(body);
+    //TODO validate this table in another way
+    let $timesheetsTable = $('.pagination').prev();
 
-  //TODO validate this table in another way
-  let $timesheetsTable = $('.pagination').prev();
+    return {
+      maxPageNumber: getMaxPageNumberFromTimesheets($),
+      timesheets: _(yatsParse.parseViewTableRows($, $timesheetsTable)).map($element => {
+        return {
+          endDate: getColumnDate($, $element, 0),
+          endDatePretty: getColumnDatePretty($, $element, 0),
+          createDate: getColumnDate($, $element, 1),
+          createDatePretty: getColumnDatePretty($, $element, 1),
+          status: getColumnText($, $element, 2),
+          totalHours: getColumnText($, $element, 3),
+          id: getIdFromHref($($($element.get(4)).children().get(0)).attr('href'))
+        };
+      }).value()
+    };
+  }
+  catch(err){
+    console.error('Error parseTimesheetsFromResponse', err);
+    throw err;
+  }
 
-  return {
-    maxPageNumber: getMaxPageNumberFromTimesheets($),
-    timesheets: _(yatsParse.parseViewTableRows($, $timesheetsTable)).map($element => {
-
-      return {
-        endDate: getColumnDate($, $element, 0),
-        endDatePretty: getColumnDatePretty($, $element, 0),
-        createDate: getColumnDate($, $element, 1),
-        createDatePretty: getColumnDatePretty($, $element, 1),
-        status: getColumnText($, $element, 2),
-        totalHours: getColumnText($, $element, 3),
-        id: getIdFromHref($($($element.get(4)).children().get(0)).attr('href')),
-      };
-
-    }).value()
-  };
 }
 
 function getMaxPageNumberFromTimesheets($){
   var href = $($($('.nextpage').prev()).find('a').get(0)).attr('href') || '';
-
   return _.last(href.split('/')).replace('list?page=', '');
 }
 

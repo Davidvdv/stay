@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('stayApp')
-  .directive('navbar', ($mdSidenav, $log, appConfig, $mdMedia, Auth, $timeout, Timesheet, TimesheetDialog) => ({
+  .directive('navbar', ($mdSidenav, $log, appConfig, $q, $mdMedia, Auth, $timeout, Timesheet, TimesheetDialog) => ({
     templateUrl: 'components/navbar/navbar.html',
     restrict: 'E',
     replace: true,
     scope: {
-      navbarDesktopToggle: '='
+      navbarDesktopToggle: '=',
+      timesheet: '='
     },
     link: (scope) => {
 
@@ -14,6 +15,8 @@ angular.module('stayApp')
 
       function init(){
         scope.addClient = addClient;
+        scope.save = save;
+        scope.isSaving = isSaving;
         scope.logout = Auth.logout;
         scope.toggleSideNav = buildToggler(appConfig.sideNavId);
         scope.navbarDesktopToggle = scope.navbarDesktopToggle === undefined;
@@ -32,6 +35,19 @@ angular.module('stayApp')
           });
       }
 
+      function save($event){
+        if(! scope.timesheet){
+          $log.debug('No timesheet in navbar save');
+          return $q.reject();
+        }
+        else {
+          return Timesheet.saveTimesheet(scope.timesheet.id);
+        }
+      }
+
+      function isSaving($event){
+        return scope.timesheet && Timesheet.isTimesheetSaving(scope.timesheet.id);
+      }
 
       function buildToggler(navID) {
         return () => {

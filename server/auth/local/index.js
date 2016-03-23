@@ -11,7 +11,7 @@ import User from '../../api/user/user.model';
 
 
 
-
+//TODO abstract to yats.login service
 
 var router = express.Router();
 
@@ -37,9 +37,7 @@ router.post('/', function(req, res, next) {
     .then(loginWithCredentials(requestCookie, email, req.body.password))
     .then(function([response]){
 
-      var ssoCookie = _(cookieJar.getCookies(url)).filter(function(cookie){
-        return cookie && cookie.key === 'iPlanetDirectoryPro';
-      }).first();
+      var ssoCookie = _(cookieJar.getCookies(url)).filter(function(cookie){ return cookie && cookie.key === 'iPlanetDirectoryPro'; }).first();
 
       if( ! ssoCookie ){ return res.sendStatus(401); }
 
@@ -49,6 +47,8 @@ router.post('/', function(req, res, next) {
           if(user){
             user.ssoCookieKey = ssoCookie.key;
             user.ssoCookieValue = ssoCookie.value;
+            user.sessionCookieKey = '';
+            user.sessionCookieValue = '';
             return user.saveAsync().then(function([updatedUser]){return updatedUser;});
           }
           else {

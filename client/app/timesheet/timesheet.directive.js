@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .directive('timesheet', function ($log, Timesheet, TimesheetDialog, $timeout) {
+  .directive('timesheet', function ($log, Timesheet, TimesheetDialog, $timeout, Projects) {
     return {
       templateUrl: 'app/timesheet/timesheet.html',
       restrict: 'E',
@@ -10,11 +10,10 @@ angular.module('stayApp')
       },
       link: function (scope, element, attrs) {
 
-        $log.debug(scope);
-
         return init();
 
         function init(){
+
           scope.getProjectNameDisplay = getProjectNameDisplay;
           scope.getClientNameDisplay = getClientNameDisplay;
           scope.isKnownProject = isKnownProject;
@@ -24,17 +23,41 @@ angular.module('stayApp')
           scope.addRow = addRow;
           scope.getTaskTotal = getTaskTotal;
           scope.svElementOpts = { containment: '#timesheet-content' };
+          scope.getActivitiesByTask = getActivitiesByTask;
+          scope.getTasksByTask = getTasksByTask;
 
           scope.setupTotalWatcher = setupTotalTaskWatcher;
 
           $timeout(() => {scope.isLoaded = true;});
-        };
 
+          //Make the total model based upon the sum of day totals
+          _(scope.timesheet.rows).map(client => {
+            _(client).map(projects => {
+              _(projects).map(task => {
+                task.total = () =>{
+                  return task.mon + task.tue + task.wed + task.thu + task.fri + task.sat + task.sun;
+                }
+              }).value();
+            }).value();
+          }).value();
+        }
+
+        function getActivitiesByTask(task){
+          return Projects.getActivitiesByRef(getTaskRef(task));
+        }
+
+        function getTasksByTask(task){
+          return Projects.getTasksByRef(getTaskRef(task));
+        }
+
+        function getTaskRef(task){
+          return task.clientId + task.projectId;
+        }
 
         function setupTotalTaskWatcher(task){
           scope.$watch(task, () => {
             task.total = getTaskTotal(task);
-          });
+          }, true);
         }
 
         function deleteTask($event, timesheet, taskIndex, clientName, projectName){

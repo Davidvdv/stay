@@ -21,9 +21,8 @@ angular.module('stayApp')
       $scope.getAvatarClientName = getAvatarClientName;
 
       $scope.noCache = true;
+      $scope.searchOmniText = '';
 
-      $scope.searchProjectsText = '';
-      $scope.searchClientsText = '';
       Projects.getCommon().then((commonProjects = []) => {
         $scope.commonProjects = _.take(commonProjects, 9);
       });

@@ -11,6 +11,7 @@ var router = express.Router();
 
 router.get('/:id', auth.isAuthenticated(), controller.getTimesheet);
 router.get('/', auth.isAuthenticated(), controller.getTimesheets);
+router.post('/:id', auth.isAuthenticated(), controller.saveTimesheet);
 
 
 module.exports = router;

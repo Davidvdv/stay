@@ -10,6 +10,10 @@ class MainController {
     // Refreshed cached content
     Timesheet.getTimesheets({force: true});
 
+    Projects.getProjects()
+      .then(projects => {
+        this.projects = projects;
+      });
 
     const getTimesheets = () => {
 
@@ -21,10 +25,8 @@ class MainController {
       return Promise.all(timesheetPromise)
         .then(([timesheets, timesheet]) => {
 
-          $log.debug('currentState', $state, $state.params);
+          //$log.debug('currentState', $state, $state.params);
           $log.debug('timesheets', timesheets);
-          $log.debug('currentTimesheet?', timesheet);
-
           this.timesheets = timesheets;
 
           if(timesheet){
@@ -54,14 +56,6 @@ class MainController {
 
             try {
 
-              //Preload projects
-              $timeout(() => {
-                return Projects.getProjects()
-                  .then(projects => {
-                    this.projects = projects;
-                  });
-              });
-
               //Preload next timesheet
               let index = _(timesheets).map((timesheet, index) => {
                 if(timesheet.id === currentTimesheet.id){
@@ -76,6 +70,13 @@ class MainController {
             }
             catch(err){$log.error(err);}
 
+          }
+        })
+        .catch(err => {
+          if(err.status === 404){
+
+            //TODO handle better -> go directly to next timesheet
+            return $state.go($state.current.name, {id: ''}, {reload: true});
           }
         });
     };

@@ -9,7 +9,15 @@ var ProjectYatsSchema = new mongoose.Schema({
   },
   projects: [{
     id: String,
-    name: String
+    name: String,
+    tasks: [{
+      id: String,
+      name: String
+    }],
+    activities: [{
+      id: String,
+      name: String
+    }]
   }]
 },
 {

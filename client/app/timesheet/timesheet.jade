@@ -4,7 +4,6 @@
 md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-padding, ng-class='{"fade-in": timesheet && isLoaded}')
 
 
-
   md-content.client(ng-repeat='(clientName, clientValue) in timesheet.rows track by $index')
 
     md-content.project(ng-show='projectValue.length > 0' layout-padding ng-repeat='(projectName, projectValue) in clientValue track by $index',
@@ -27,8 +26,13 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
       h1.hide-collapsed-menu(ng-show='isKnownProject(projectName)') {{getClientNameDisplay(clientName)}}
 
 
-      div.no-padding(sv-root sv-part="projectValue")
-        md-content.task(ng-class='{"first-task": $first}' sv-element='svElementOpts' flex layout='row' ng-repeat='task in projectValue track by $index')
+      //div.no-padding(sv-root sv-part="projectValue")
+        md-content.task(class='{{task.id}}' ng-class='{"first-task": $first}'
+        flex layout='row' ng-repeat='task in projectValue track by $index',
+        sv-element='svElementOpts')
+      div.no-padding()
+        md-content.task(class='{{task.id}}' ng-class='{"first-task": $first}'
+        flex layout='row' ng-repeat='task in projectValue track by $index')
 
           include ./timesheet-task.jade
 

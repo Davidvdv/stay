@@ -33,8 +33,8 @@ export function getTimesheets(user, timesheetPage){
     });
 }
 
-export function saveTimesheet(user, timesheet){
-  return timesheetYats.saveTimesheet(user, id);
+export function saveTimesheet(user, id, timesheet){
+  return timesheetYats.saveTimesheet(user, id, timesheet);
 }
 
 export function getTimesheet(user, id){
