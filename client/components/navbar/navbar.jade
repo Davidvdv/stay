@@ -17,18 +17,23 @@ md-toolbar.navbar.md-whiteframe-z3.fade-in-content(ng-class='{"fade-in": navbarI
             md-icon(md-font-set="material-icons") visibility_off
             | Hide timesheets
         md-menu-item
+          md-button(ng-click='reset()' aria-label="Reset")
+            md-icon(md-font-set="material-icons") refresh
+            | Reset to YATS
+        md-menu-item
           md-button(ng-click='logout()' aria-label="Logout")
             md-icon(md-font-set="material-icons") power_settings_new
             | Logout
 
 
-    md-content
+    md-content(ng-if='isEditableTimesheet()')
       md-button.md-icon-button.save-button(tabindex="15" ng-click='save($event)' aria-label="New task")
         md-icon(ng-hide='isSaving()' md-font-set="material-icons") save
         md-progress-circular(ng-show='isSaving()' md-mode="indeterminate" md-diameter='40')
+        md-tooltip.md-warn(md-direction='bottom') Save
 
       md-button.md-icon-button.new-button(tabindex="15" ng-click='addClient($event)' aria-label="New task")
         md-icon(md-font-set="material-icons") add
-        md-tooltip.md-warn(md-direction='left') New task
+        md-tooltip.md-warn(md-direction='bottom') New task
 
 

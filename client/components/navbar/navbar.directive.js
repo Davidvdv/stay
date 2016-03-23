@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('stayApp')
-  .directive('navbar', ($mdSidenav, $log, appConfig, $q, $mdMedia, Auth, $timeout, Timesheet, TimesheetDialog) => ({
+  .directive('navbar', ($mdSidenav, $log, appConfig, $q, $state, $mdMedia, Auth, $timeout, Timesheet, TimesheetDialog, Projects) => ({
     templateUrl: 'components/navbar/navbar.html',
     restrict: 'E',
     replace: true,
@@ -15,12 +15,21 @@ angular.module('stayApp')
 
       function init(){
         scope.addClient = addClient;
+        scope.isEditableTimesheet = isEditableTimesheet;
         scope.save = save;
         scope.isSaving = isSaving;
         scope.logout = Auth.logout;
         scope.toggleSideNav = buildToggler(appConfig.sideNavId);
         scope.navbarDesktopToggle = scope.navbarDesktopToggle === undefined;
         scope.isToggleFinished = true;
+        scope.reset = reset;
+      }
+
+      function reset(){
+        Timesheet.clearTimesheetsCache();
+        Projects.clearProjectsCache();
+
+        return $state.go($state.current.name, {id: ''});
       }
 
       function addClient($event){
@@ -33,6 +42,10 @@ angular.module('stayApp')
                 });
             }
           });
+      }
+
+      function isEditableTimesheet(){
+        return Timesheet.isEditableTimesheet(scope.timesheet);
       }
 
       function save($event){

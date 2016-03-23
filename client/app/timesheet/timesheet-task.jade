@@ -2,49 +2,49 @@
 
 md-input-container.stretch-input.description-input.bold-input(md-no-float="true")
   label(ng-if='$first') Description
-  input(type='input' tabindex="1" ng-model='task.description', placeholder='Description')
+  input(type='input' tabindex="1" ng-model='task.description', ng-disabled='ngDisabled' ng-model-options='ngModelOptions' placeholder='Description')
 
 
-md-input-container.stretch-input.task-input(md-no-float="true", ng-if='getTasksByTask(task).length > 0')
+md-input-container.stretch-input.task-input(md-no-float="true", ng-if='::getTasksByTask(task).length > 0')
   label(ng-if='$first') Task
-  md-select(ng-model='task.taskId', ng-init='task.taskId = task.taskId || getTasksByTask(task)[0].id')
-    md-option(ng-repeat='task in getTasksByTask(task) track by task.id' value='{{::task.id}}') {{::task.name}}
+  md-select(ng-model='task.taskId', aria-label='select task', ng-model-options='ngModelOptions', ng-init='task.taskId = task.taskId || getTasksByTask(task)[0].id')
+    md-option(ng-repeat='task in ::getTasksByTask(task) track by task.id' ng-disabled='ngDisabled' value='{{::task.id}}') {{::task.name}}
   //input(type='input' tabindex="1" ng-model='task.task' placeholder='Task')
 
-md-input-container.stretch-input.activity-input(md-no-float="true", ng-if='getActivitiesByTask(task).length > 0')
+md-input-container.stretch-input.activity-input(md-no-float="true", ng-if='::getActivitiesByTask(task).length > 0')
   label(ng-if='$first') Activity
-  md-select(ng-model='task.activityId', ng-init='task.activityId = task.activityId || getActivitiesByTask(task)[0].id')
-    md-option(ng-repeat='activity in getActivitiesByTask(task) track by activity.id' value='{{::activity.id}}') {{::activity.name}}
+  md-select(ng-model='task.activityId', aria-label='select activity' ng-model-options='ngModelOptions', ng-init='task.activityId = task.activityId || getActivitiesByTask(task)[0].id')
+    md-option(ng-repeat='activity in ::getActivitiesByTask(task) track by activity.id' ng-disabled='ngDisabled' value='{{::activity.id}}') {{::activity.name}}
   //input(type='input' tabindex="1" ng-model='task.activity' placeholder='Activity')
 
 
 md-input-container.task-day-input(md-no-float="true", ng-class='{"is-zero": task.mon === 0}')
   label(ng-if='$first') M
-  input(type='number' tabindex="1" aria-label='Monday hours' min='0' max='99' ng-init="task.mon=task.mon||0" ng-model='task.mon')
+  input(type='number' tabindex="1" aria-label='Monday hours' min='0' max='99' ng-disabled='ngDisabled' ng-init="task.mon=task.mon||0" ng-model='task.mon', ng-model-options='ngModelOptions')
 
 md-input-container.task-day-input(md-no-float="true", ng-class='{"is-zero": task.tue === 0}')
   label(ng-if='$first') T
-  input(type='number' tabindex="1" aria-label='Tuesday hours' min='0' max='99' ng-init="task.tue=task.tue||0" ng-model='task.tue')
+  input(type='number' tabindex="1" aria-label='Tuesday hours' min='0' max='99' ng-disabled='ngDisabled' ng-init="task.tue=task.tue||0" ng-model='task.tue', ng-model-options='ngModelOptions')
 
 md-input-container.task-day-input(md-no-float="true", ng-class='{"is-zero": task.wed === 0}')
   label(ng-if='$first') W
-  input(type='number' tabindex="1" aria-label='Wednesday hours' min='0' max='99' ng-init="task.wed=task.wed||0" ng-model='task.wed')
+  input(type='number' tabindex="1" aria-label='Wednesday hours' min='0' max='99' ng-disabled='ngDisabled' ng-init="task.wed=task.wed||0" ng-model='task.wed', ng-model-options='ngModelOptions')
 
 md-input-container.task-day-input(md-no-float="true", ng-class='{"is-zero": task.thu === 0}')
   label(ng-if='$first') T
-  input(type='number' tabindex="1" aria-label='Thursday hours' min='0' max='99' ng-init="task.thu=task.thu||0" ng-model='task.thu')
+  input(type='number' tabindex="1" aria-label='Thursday hours' min='0' max='99' ng-disabled='ngDisabled' ng-init="task.thu=task.thu||0" ng-model='task.thu', ng-model-options='ngModelOptions')
 
 md-input-container.task-day-input(md-no-float="true", ng-class='{"is-zero": task.fri === 0}')
   label(ng-if='$first') F
-  input(type='number' tabindex="1" aria-label='Friday hours' min='0' max='99' ng-init="task.fri=task.fri||0" ng-model='task.fri')
+  input(type='number' tabindex="1" aria-label='Friday hours' min='0' max='99' ng-disabled='ngDisabled' ng-init="task.fri=task.fri||0" ng-model='task.fri', ng-model-options='ngModelOptions')
 
 md-input-container.task-total-input.bold-input(md-no-float="true", ng-class='{"is-zero": task.total === 0}')
   label(ng-if='$first') Total
-  input(type='number' tabindex="1" aria-label="Total hours" min='0' max='99' ng-init="(task.total=task.total || 0) && setupTotalTaskWatcher(task)"
+  input(type='number' tabindex="1" aria-label="Total hours" min='0' max='99' ng-disabled='true' ng-init="(task.total=task.total || 0)"
   ng-model='task.total', ng-model-options="{ getterSetter: true }")
 
 
-md-menu.task-menu-input(md-position-mode="target-right target")
+md-menu.task-menu-input(md-position-mode="target-right target", ng-if='isEditableTimesheet()')
   md-button.md-icon-button(tabindex="1" aria-label='Open timesheet menu', ng-click='$mdOpenMenu($event)',)
     md-icon(md-font-set="material-icons") more_vert
 

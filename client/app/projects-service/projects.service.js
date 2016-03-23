@@ -14,6 +14,8 @@ angular.module('stayApp')
 
     this.clearProjectsCache = () => {
       this.projects = undefined;
+      this.projectsIndex = undefined;
+      this.projectsStore = {};
       return $localStorage.projects = undefined;
     };
 

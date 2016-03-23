@@ -9,10 +9,7 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
     md-content.project(ng-show='projectValue.length > 0' layout-padding ng-repeat='(projectName, projectValue) in clientValue track by $index',
     ng-class='{"top-project": $first, "bottom-project": $last}')
 
-
-
       md-content.title(flex layout='row')
-
         div(flex layout='column')
           h1.show-collapsed-menu {{getClientNameDisplay(clientName)}}
 
@@ -25,7 +22,6 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
 
       h1.hide-collapsed-menu(ng-show='isKnownProject(projectName)') {{getClientNameDisplay(clientName)}}
 
-
       //div.no-padding(sv-root sv-part="projectValue")
         md-content.task(class='{{task.id}}' ng-class='{"first-task": $first}'
         flex layout='row' ng-repeat='task in projectValue track by $index',
@@ -37,8 +33,8 @@ md-content.timesheet-content.fade-in-content(id="timesheet-content" layout-paddi
           include ./timesheet-task.jade
 
       md-content.bottom-actions(flex layout='column')
-        div(ng-hide='isKnownProject(projectName)') &nbsp;
-        md-button.md-icon-button(ng-if='isKnownProject(projectName)', tabindex="1", ng-click='addRow(clientName, projectName)')
+        div(ng-hide='isKnownProject(projectName) || ! isEditableTimesheet()') &nbsp;
+        md-button.md-icon-button(ng-if='isKnownProject(projectName) && isEditableTimesheet()', tabindex="1", ng-click='addRow(clientName, projectName)')
           md-icon(md-font-set="material-icons") add
           md-tooltip(md-direction='left') Add row
 

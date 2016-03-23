@@ -26,7 +26,9 @@ angular.module('stayApp')
           scope.getActivitiesByTask = getActivitiesByTask;
           scope.getTasksByTask = getTasksByTask;
 
-          scope.setupTotalWatcher = setupTotalTaskWatcher;
+          scope.ngModelOptions = {debounce: { default: 500, blur: 0 }};
+          scope.ngDisabled = ! isEditableTimesheet();
+          scope.isEditableTimesheet = isEditableTimesheet;
 
           $timeout(() => {scope.isLoaded = true;});
 
@@ -42,6 +44,10 @@ angular.module('stayApp')
           }).value();
         }
 
+        function isEditableTimesheet(){
+          return Timesheet.isEditableTimesheet(scope.timesheet);
+        }
+
         function getActivitiesByTask(task){
           return Projects.getActivitiesByRef(getTaskRef(task));
         }
@@ -54,11 +60,6 @@ angular.module('stayApp')
           return task.clientId + task.projectId;
         }
 
-        function setupTotalTaskWatcher(task){
-          scope.$watch(task, () => {
-            task.total = getTaskTotal(task);
-          }, true);
-        }
 
         function deleteTask($event, timesheet, taskIndex, clientName, projectName){
           $log.debug('deleteTask', timesheet, taskIndex, clientName, projectName);

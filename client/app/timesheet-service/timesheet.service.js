@@ -4,16 +4,15 @@ angular.module('stayApp')
   .service('Timesheet', function ($window, $http, $log, $q, $timeout, $localStorage, Projects, $state, $stateParams, Util) {
 
     //TODO namespace with username
-    this.timesheets = $localStorage.timesheets = $window.timesheets || $localStorage.timesheets || undefined;
+    this.timesheets = $localStorage.timesheets = $window.timesheets || $localStorage.timesheets || [];
 
     this.clearTimesheetsCache = () => {
-      this.timesheets = undefined;
-      return $localStorage.timesheets = undefined;
+      this.timesheets.splice(0, this.timesheets.length);
+      return $localStorage.timesheets = this.timesheets;
     };
 
-
     this.getTimesheets = ({force} = {}) => {
-      return this.timesheets && ! force ? $q.when(this.timesheets) : $http.get('/api/timesheets', {cache: true})
+      return this.timesheets && this.timesheets.length > 0 && ! force ? $q.when(this.timesheets) : $http.get('/api/timesheets', {cache: true})
         .then(response => {
 
           // Merge the timesheets in
@@ -81,6 +80,8 @@ angular.module('stayApp')
         });
     };
 
+
+    this.isEditableTimesheet = timesheet => {return timesheet && timesheet.status === 'Created'; };
 
     this.delay = (ms = 0) => {
       return $q(resolve => {$timeout(resolve, ms);});
@@ -295,7 +296,8 @@ angular.module('stayApp')
         .then(timesheet => {
 
           //TODO Should set up watcher on entire timesheets array and save with a throttle + debounce
-          this.saveTimesheet(timesheetId);
+          //this.saveTimesheet(timesheetId);
+
           return timesheet;
         });
     };
